@@ -1,27 +1,16 @@
+import modules.complements.GeometryObject as Gobj
+
 class GameObject:
-    def __init__(self, width, height, x, y):
-        self.width = width
-        self.height = height
-        self.x = x
-        self.y = y
+    def __init__(self, width, height, x, y, speed):
+        # Ограничивающий прямоугольник объекта
+        # Но т.к. в данной версии движка все объекты прямоугольники
+        # то по-сути это размер+позиция объекта
+        self.border_rect = Gobj.Rectangle(width, height, Gobj.Point(x, y))
+        self.speed = speed
 
     # объект провзаимодействовал с другим объектом
     def action_contact(self):
         return
 
-
-class DynamicObj(GameObject):
-    def __init__(self, width, height, x, y, speed):
-        self.speed = speed
-        GameObject.__init__(self, width, height, x, y)
-
     def move(self, move_vector):
-        move_vector = move_vector.upper()
-        if move_vector == "UP":
-            self.x -= self.speed
-        if move_vector == "DOWN":
-            self.x += self.speed
-        if move_vector == "LEFT":
-            self.y -= self.speed
-        if move_vector == "RIGTH":
-            self.y += self.speed
+        return
