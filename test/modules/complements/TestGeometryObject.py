@@ -66,4 +66,8 @@ class GeometryObjectRectangleTestCase(GeometryObjectRectangleStartTestCase):
 
         self.rectangle = Gobj.Rectangle(50, 50, Gobj.Point(50, 0))
         rect_in = Gobj.Rectangle(25, 25, Gobj.Point(25, 0))
+        self.assertFalse(self.rectangle.check_in_rect(rect_in))
+
+        self.rectangle = Gobj.Rectangle(50, 50, Gobj.Point(50, 0))
+        rect_in = Gobj.Rectangle(25, 25, Gobj.Point(75, 0))
         self.assertTrue(self.rectangle.check_in_rect(rect_in))
