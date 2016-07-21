@@ -5,7 +5,7 @@ class Quadtree:
     def __init__(self, border_rect):
         if type(border_rect) != Gobj.Rectangle:
             raise Exception("Error", "Invalid type border_rect (must Rectangle)")
-
+        self.max_elements_in_node = 5
         self.rect = border_rect
         self.value = []
         self.children = {
@@ -38,25 +38,26 @@ class Quadtree:
         result = False
         child_rect = self._get_child_rect()
         if self._check_object(object_rect):
-            if not self.children["lt"]:
-                self.children["lt"] = Quadtree(child_rect["lt"])
-
-            if not self.children["rt"]:
-                self.children['rt'] = Quadtree(child_rect["rt"])
-
-            if not self.children["lb"]:
-                self.children['lb'] = Quadtree(child_rect["lb"])
-
-            if not self.children["rb"]:
-                self.children['rb'] = Quadtree(child_rect["rb"])
-
-            result = self.children["lb"].add(object_value, object_rect)
-            result |= self.children["rt"].add(object_value, object_rect)
-            result |= self.children["lt"].add(object_value, object_rect)
-            result |= self.children["rb"].add(object_value, object_rect)
-            if not result:
+            if len(self.value) < self.max_elements_in_node:
                 self.value.append(object_value)
                 result = True
+            else:
+                if not self.children["lt"]:
+                    self.children["lt"] = Quadtree(child_rect["lt"])
+
+                if not self.children["rt"]:
+                    self.children['rt'] = Quadtree(child_rect["rt"])
+
+                if not self.children["lb"]:
+                    self.children['lb'] = Quadtree(child_rect["lb"])
+
+                if not self.children["rb"]:
+                    self.children['rb'] = Quadtree(child_rect["rb"])
+
+                result = self.children["lb"].add(object_value, object_rect)
+                result |= self.children["rt"].add(object_value, object_rect)
+                result |= self.children["lt"].add(object_value, object_rect)
+                result |= self.children["rb"].add(object_value, object_rect)
 
         return result
 

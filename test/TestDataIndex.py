@@ -8,6 +8,7 @@ class DataIndexQuadtreeStartTestCase(unittest.TestCase):
         point = Gobj.Point(0, 0)
         map = Gobj.Rectangle(100, 100, point)
         self.tree = DIndex.Quadtree(map)
+        self.tree.max_elements_in_node = 1
 
 
 class DataIndexQuadTreeTestCase(DataIndexQuadtreeStartTestCase):
@@ -17,27 +18,25 @@ class DataIndexQuadTreeTestCase(DataIndexQuadtreeStartTestCase):
             "rect": Gobj.Rectangle(50, 50, Gobj.Point(50, 0))
         }
         self.assertTrue(self.tree.add(test_object["value"], test_object["rect"]))
-        self.assertIsNotNone(self.tree.children["rt"])
-        self.assertIsNotNone(self.tree.children["lt"])
-        self.assertIsNotNone(self.tree.children["lb"])
-        self.assertIsNotNone(self.tree.children["rb"])
-        self.assertEqual(self.tree.children["rt"].value, [test_object["value"]])
 
         test_object_2 = {
             "value": "test_value_2",
             "rect": Gobj.Rectangle(20, 20, Gobj.Point(0, 0))
         }
         self.assertTrue(self.tree.add(test_object_2["value"], test_object_2["rect"]))
+
         self.assertIsNotNone(self.tree.children["rt"])
         self.assertIsNotNone(self.tree.children["lt"])
         self.assertIsNotNone(self.tree.children["lb"])
         self.assertIsNotNone(self.tree.children["rb"])
+        self.assertEqual(self.tree.value, [test_object["value"]])
+
         lt_branch = self.tree.children["lt"]
-        self.assertIsNotNone(lt_branch.children["rt"])
-        self.assertIsNotNone(lt_branch.children["lt"])
-        self.assertIsNotNone(lt_branch.children["lb"])
-        self.assertIsNotNone(lt_branch.children["rb"])
-        self.assertEqual(lt_branch.children["lt"].value, [test_object_2["value"]])
+        self.assertIsNone(lt_branch.children["rt"])
+        self.assertIsNone(lt_branch.children["lt"])
+        self.assertIsNone(lt_branch.children["lb"])
+        self.assertIsNone(lt_branch.children["rb"])
+        self.assertEqual(lt_branch.value, [test_object_2["value"]])
 
     def test_find(self):
         test_object = [
