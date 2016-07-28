@@ -1,5 +1,7 @@
 import unittest
+
 import modules.complements.GeometryObject as Gobj
+
 
 class GeometryObjectPointStartTestCase(unittest.TestCase):
     def setUp(self):

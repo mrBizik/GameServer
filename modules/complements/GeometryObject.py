@@ -47,6 +47,7 @@ class Rectangle(Point):
 
         return result
 
+    # Возвращает вершины прямоугольника
     def get_apex(self):
         return [
             Point(self.x, self.y),
@@ -55,7 +56,8 @@ class Rectangle(Point):
             Point(self.x + self.width, self.y + self.height)
         ]
 
-    def check_intercections(self, rect):
+    # Пересекается ли с rect
+    def check_intersection(self, rect):
         if type(rect) != Rectangle:
             raise Exception('Error', 'Invalid type rect')
 

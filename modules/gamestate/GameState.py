@@ -1,6 +1,7 @@
-import modules.complements.GeometryObject as Gobj
-import modules.gamestate.GameObject as Object
 import modules.complements.DataIndex as Dindex
+import modules.gamestate.GameObject as Object
+import modules.complements.GeometryObject as Gobj
+
 
 class GameState:
     def __init__(self, width, height):
@@ -18,8 +19,22 @@ class GameState:
             if type(i_obj) != Object.GameObject:
                 raise Exception('Ошибка инициализации игрового сотояния. Неверный тип игровго оъекта')
 
-            self.game_objects[i_obj.alias] = i_obj
-            self.map_index.add(i_obj.alias, i_obj.border_rect)
+            try:
+                self.game_objects[i_obj.alias]
+            except KeyError:
+                self.game_objects[i_obj.alias] = i_obj
+                self.map_index.add(i_obj.alias, i_obj.border_rect)
+            else:
+                raise Exception('Такой alias уже существует')
 
-    def check_colision(self, for_object):
-        return
+    # Проверить с кем столкнулся объект for_rect
+    def check_collision(self, for_rect):
+        result = []
+        # Ищем ближайшие объекты
+        near_objects = self.map_index.find(for_rect, [])
+        # Проверяем с кем пересеклись
+        for i_object in near_objects:
+            if self.game_objects[i_object].border_rect.check_intersection(for_rect):
+                result.append(self.game_objects[i_object])
+
+        return result
