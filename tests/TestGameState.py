@@ -1,9 +1,9 @@
 import unittest
 
-import modules.complements.GeometryObject as Gobj
-import modules.gamestate.GameObject as Object
+import lib.GeometryObject as Gobj
 
-import modules.gamestate.GameState as Gstate
+import core.GameObject as Object
+import core.GameState as Gstate
 
 
 class GameStateStartTestCase(unittest.TestCase):

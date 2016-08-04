@@ -1,6 +1,7 @@
-import modules.complements.DataIndex as Dindex
-import modules.gamestate.GameObject as Object
-import modules.complements.GeometryObject as Gobj
+import lib.GeometryObject as Gobj
+import lib.DataIndex as Dindex
+
+import core.GameObject as Object
 
 
 class GameState:

@@ -1,6 +1,6 @@
 import unittest
 
-import modules.complements.GeometryObject as Gobj
+import lib.GeometryObject as Gobj
 
 
 class GeometryObjectPointStartTestCase(unittest.TestCase):

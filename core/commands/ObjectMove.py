@@ -1,5 +1,6 @@
-import modules.complements.GeometryObject as Gobj
-import modules.command.Command as Command
+import lib.GeometryObject as Gobj
+
+import core.commands.Command as Command
 
 
 class ObjectMove(Command.Command):

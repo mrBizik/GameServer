@@ -1,4 +1,4 @@
-import modules.complements.GeometryObject as Gobj
+import lib.GeometryObject as Gobj
 
 
 class GameObject:
