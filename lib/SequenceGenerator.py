@@ -1,19 +1,32 @@
 class Sequence():
-    current_value = None
+    def __init__(self):
+        self.current_value = -1
+
+    def current(self):
+        return self.current_value
+
+    def next(self):
+        self.current_value += 1
+        return self.current()
+
+    def reset(self):
+        self.current_value = -1
+
+
+class GlobalSequence():
+    current_value = -1
     def __init__(self):
         return
 
-    def current(self):
-        return Sequence.current_value
+    @staticmethod
+    def current():
+        return GlobalSequence.current_value
 
-    def next(self):
-        if not Sequence.current_value:
-            Sequence.init_sequence()
-        Sequence.current_value += 1
-        return Sequence.current()
+    @staticmethod
+    def next():
+        GlobalSequence.current_value += 1
+        return GlobalSequence.current()
 
-    def reset(self):
-        Sequence.current_value = -1
-
-    def init_sequence(self):
-        Sequence.current_value = -1
+    @staticmethod
+    def reset():
+        GlobalSequence.current_value = -1
