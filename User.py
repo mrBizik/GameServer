@@ -1,17 +1,10 @@
-from lib.SequenceGenerator import Sequence
-
-import ConnectionPool
-
-
 class UserConnection():
-    def __init__(self, web_socket):
-        self.id_game = None
-        self.id = Sequence().next()
-        self.wsocket = web_socket
+    def __init__(self, user_seq):
+        # TODO: Вытаскивать юзера из базы и выдавать все настройки
+        self.key_bind = self.init_key_bind()
+        self.id = user_seq.next()
 
-    def connect_to_game(self, id_game, pool):
-        try:
-           self.id_game =  pool.connect_user_to_game(self.id, id_game)
-        except Exception:
-            # TODO: Сделать поиск свободных игр
-            print("Error connect to game")
+    """ Получить раскладку клавиш для пользователя """
+    # TODO: Вытаскивать из базы
+    def init_key_bind(self):
+        return {}
