@@ -9,9 +9,13 @@ class GameState:
         self.size = Gobj.Rectangle(width, height, Gobj.Point(0, 0))
         self.game_objects = {}
         self.map_index = Dindex.Quadtree(self.size)
+        # Список игроков, участвующих в игре, необходим для проверки подлиности запросов
+        self.players = []
+        self.max_players = 4
 
     # Выполнить комманду с контекстом текущего стейта
     def command_exec(self, command):
+        # TODO: Сделать запись в очередь комманд, а вызывать в другом месте(каком?)
          command(self)
 
     def init_map(self, game_objects):
@@ -39,3 +43,16 @@ class GameState:
                 result.append(self.game_objects[i_object])
 
         return result
+
+    def add_player(self, user_id):
+        if not self.is_full():
+            self.players.append(user_id)
+        else:
+            raise Exception('Список игроков заполнен!')
+
+    def is_full(self):
+        return not (len(self.players) <= self.max_players)
+
+    def leave(self, id_user):
+        pass
+

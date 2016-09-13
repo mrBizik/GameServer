@@ -5,6 +5,8 @@ import tornado.ioloop
 
 import GameSocket
 
+from GamePool import GamePool
+
 from lib.SequenceGenerator import Sequence
 
 class MainHandler(tornado.web.RequestHandler):
@@ -15,8 +17,7 @@ class MainHandler(tornado.web.RequestHandler):
 class Application(tornado.web.Application):
     def __init__(self):
         self.next_user_id = Sequence()
-        # TODO: Запилить контроллер
-        self.game_controller = None
+        self.game_pool = GamePool()
 
         handlers = (
             (r'/', MainHandler),
@@ -24,6 +25,7 @@ class Application(tornado.web.Application):
             (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'static/'}),
         )
 
+        # TODO: заменить на super?
         tornado.web.Application.__init__(self, handlers)
 
 application = Application()
