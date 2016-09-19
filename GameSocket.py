@@ -1,6 +1,8 @@
 import RPCWSocket as Socket
 import User
 
+from core.commands.Command import Command
+
 class GameSocket(Socket.RPCWSocket):
     def __init__(self, application, request, **kwargs):
         self.user = User.UserConnection(application.next_user_id)
@@ -18,8 +20,14 @@ class GameSocket(Socket.RPCWSocket):
         }
         return result
 
+    def _on_state_update(self):
+        self.write_message(self.game_state.to_json())
+
     def  new_game(self, *args):
+        # TODO: добавить метод для слушателя
+        callback = None
         self.game_state = self.application.game_pool.new_game()
+        self.game_state.add_player(self.user.id, callback)
         # TODO: отдать сгенерированный стейт
         self.write_message({"ready": True, "state": None})
 
@@ -31,7 +39,10 @@ class GameSocket(Socket.RPCWSocket):
 
     def move(self, *args):
         params = self._parse_params(["x", "y"], *args)
-        self.write_message(params)
+        command = Command(params)
+        command(self)
+        print(self.user.id)
+        # self.write_message(params)
 
     def leave_game(self, *args):
         self.game_state.leave_game(self.user.id)

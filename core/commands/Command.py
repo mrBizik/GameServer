@@ -8,4 +8,4 @@ class Command:
 
     # Метод переопределяется в предках и выполняет соотв. команде действия
     def __call__(self, state_context):
-        return
+        pass

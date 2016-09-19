@@ -7,7 +7,7 @@ class GamePool():
 
     def new_game(self):
         game = GameState(1000, 1000)
-        self.state_pool.appen(game)
+        self.state_pool.append(game)
         return game
 
     def connect_to_game(self, id_game = None):
