@@ -22,6 +22,7 @@ class Application(tornado.web.Application):
         handlers = (
             (r'/', MainHandler),
             (r'/game/(.*)', GameSocket.GameSocket),
+            # TODO: разобраться с кэшированием, возможно отдавать статику ч-з nginx
             (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'static/'}),
         )
 

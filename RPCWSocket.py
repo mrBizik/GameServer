@@ -55,8 +55,7 @@ class RPCWSocket(tornado.websocket.WebSocketHandler):
         method, params, id = self._parse_message(message)
         try:
            method_i = self.rpc_methods.index(method)
-           print("Call method: " + method + " data = " + str(self.__class__.__dict__[method]))
-           # yield self.__class__.__dict__[method](self, params)
+           # print("Call method: " + method + " data = " + str(self.__class__.__dict__[method]))
            self.__class__.__dict__[method](self, params)
         # Метод не найден
         except ValueError:
@@ -65,7 +64,11 @@ class RPCWSocket(tornado.websocket.WebSocketHandler):
 
 
     def on_close(self):
+        self._close_socket()
         print("Server closed socket")
+
+    def _close_socket(self):
+        pass
 
     """
       Обертка стандартного write_message

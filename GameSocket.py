@@ -23,8 +23,11 @@ class GameSocket(Socket.RPCWSocket):
     def _on_state_update(self):
         self.write_message(self.game_state.to_json())
 
+    def _close_socket(self):
+        self.game_state.leave(self.user.id)
+
     def  new_game(self, *args):
-        # TODO: добавить метод для слушателя
+        # TODO: добавить метод для слушателя gameSate'a
         callback = None
         self.game_state = self.application.game_pool.new_game()
         self.game_state.add_player(self.user.id, callback)
@@ -39,10 +42,8 @@ class GameSocket(Socket.RPCWSocket):
 
     def move(self, *args):
         params = self._parse_params(["x", "y"], *args)
-        command = Command(params)
-        command(self)
-        print(self.user.id)
-        # self.write_message(params)
+        params["user"] = self.user.id
+        self.game_state.command_push(Command(params))
 
     def leave_game(self, *args):
         self.game_state.leave_game(self.user.id)

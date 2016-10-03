@@ -26,7 +26,7 @@ RPCWSocket.prototype._onclose = function(event) {
 RPCWSocket.prototype._onmessage = function(event) {
     var parsed_data = JSON.parse(event.data);
     console.log(parsed_data);
-    this.id_pool.push(parsed_data.id);
+    // this.id_pool.push(parsed_data.id);
     // callback(parsed_data.result);
 };
 
