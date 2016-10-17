@@ -4,7 +4,8 @@ class UserConnection():
         self.key_bind = self.init_key_bind()
         self.id = user_seq.next()
 
-    """ Получить раскладку клавиш для пользователя """
-    # TODO: Вытаскивать из базы
+
     def init_key_bind(self):
+        """ Получить раскладку клавиш для пользователя """
+        # TODO: Вытаскивать из базы
         return {}

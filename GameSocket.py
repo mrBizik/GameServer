@@ -1,7 +1,7 @@
 import RPCWSocket as Socket
 import User
 
-from core.commands.Command import Command
+from core.commands.ObjectMove import ObjectMove
 
 class GameSocket(Socket.RPCWSocket):
     def __init__(self, application, request, **kwargs):
@@ -9,10 +9,9 @@ class GameSocket(Socket.RPCWSocket):
         self.game_state = None
         super(GameSocket, self).__init__(application, request, **kwargs)
 
-    """
-      Выдать настройки игрока
-    """
+
     def _get_user_conf(self):
+      """ Выдать настройки игрока """
         user = self.user
         result = {
            "id": user.id,
@@ -20,19 +19,25 @@ class GameSocket(Socket.RPCWSocket):
         }
         return result
 
-    def _on_state_update(self):
-        self.write_message(self.game_state.to_json())
+
+    def _on_state_update(self, state):
+        # стейт передаем в коллбэк
+        # если стейт вычитывать в коллбэке,
+        # то есть вероятность вычитать более новую версию,
+        # а это не есть хорошо
+        self.write_message(state)
+
 
     def _close_socket(self):
         self.game_state.leave(self.user.id)
 
+
     def  new_game(self, *args):
-        # TODO: добавить метод для слушателя gameSate'a
-        callback = None
         self.game_state = self.application.game_pool.new_game()
-        self.game_state.add_player(self.user.id, callback)
+        self.game_state.add_player(self.user.id, self._on_state_update)
         # TODO: отдать сгенерированный стейт
         self.write_message({"ready": True, "state": None})
+
 
     def connect_game(self, *args):
         params = self._parse_params(["id_game"], *args)
@@ -40,10 +45,12 @@ class GameSocket(Socket.RPCWSocket):
         # TODO: отдать сгенерированный стейт
         self.write_message({"ready": True, "state": None})
 
+
     def move(self, *args):
         params = self._parse_params(["x", "y"], *args)
         params["user"] = self.user.id
-        self.game_state.command_push(Command(params))
+        self.game_state.command_push(ObjectMove(params))
+
 
     def leave_game(self, *args):
         self.game_state.leave_game(self.user.id)

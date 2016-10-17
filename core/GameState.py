@@ -6,10 +6,7 @@ import core.GameObject as Object
 import tornado.gen
 import tornado.ioloop
 
-# from queue import Queue
 import queue
-
-import time
 
 
 class GameState:
@@ -23,16 +20,20 @@ class GameState:
         self.listeners = []
         self.command_queue = queue.Queue()
 
+
     def command_push(self, command):
         """ Добавить команду в очередь"""
         self.command_queue.put(command)
+
 
     def command_exec(self, command, callback):
          """ Выполнить комманду с контекстом текущего стейта """
          if command:
             print('command_exec ' + str(command.params))
             command(self)
-            return callback()
+
+         return callback()
+
 
     @tornado.gen.engine
     def game_loop(self):
@@ -41,14 +42,10 @@ class GameState:
         ioloop_instance = tornado.ioloop.IOLoop.instance()
         if not command_queue.empty():
             command = command_queue.get_nowait()
-            yield [
-                tornado.gen.Task(self.command_exec, command),
-                tornado.gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, time.time() + 2)
-            ]
+            yield [tornado.gen.Task(self.command_exec, command)]
 
         self._on_update()
         ioloop_instance.add_callback(self.game_loop)
-
 
 
     def init_map(self, game_objects):
@@ -65,6 +62,7 @@ class GameState:
             else:
                 raise Exception('Такой alias уже существует')
 
+
     def check_collision(self, for_rect):
         """Проверить с кем столкнулся объект for_rect """
         result = []
@@ -74,7 +72,9 @@ class GameState:
         for i_object in near_objects:
             if self.game_objects[i_object].border_rect.check_intersection(for_rect):
                 result.append(self.game_objects[i_object])
+
         return result
+
 
     def add_player(self, user_id, callback = None):
         if not self.is_full():
@@ -84,11 +84,14 @@ class GameState:
         else:
             raise Exception('Список игроков заполнен!')
 
+
     def is_full(self):
         return not (len(self.players) <= self.max_players)
 
+
     def leave(self, id_user):
         pass
+
 
     def _on_update(self):
         for listener in self.listeners:

@@ -55,7 +55,6 @@ class RPCWSocket(tornado.websocket.WebSocketHandler):
         method, params, id = self._parse_message(message)
         try:
            method_i = self.rpc_methods.index(method)
-           # print("Call method: " + method + " data = " + str(self.__class__.__dict__[method]))
            self.__class__.__dict__[method](self, params)
         # Метод не найден
         except ValueError:
@@ -88,7 +87,6 @@ class RPCWSocket(tornado.websocket.WebSocketHandler):
                 }
             }
         message_json = json.dumps(message)
-        print("write_message: "+ message_json)
         super(RPCWSocket, self).write_message(message_json)
 
     def check_origin(self, origin):
