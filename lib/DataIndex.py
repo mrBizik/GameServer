@@ -82,6 +82,11 @@ class Quadtree:
 
         return result
 
+    def update(self, object_value, new_object_rect, old_object_rect):
+        self.delete(object_value, old_object_rect)
+        return self.add(object_value, new_object_rect)
+
+
     def find(self, zone_rect, result):
         if self._check_object(zone_rect):
             if self.value != []:
