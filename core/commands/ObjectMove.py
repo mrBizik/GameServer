@@ -10,7 +10,7 @@ class ObjectMove(Command.Command):
 
     def __call__(self, context):
         result = False
-        object_alias, move_vector = self.get_params()
+        object_alias, move_vector = self._get_params()
         moved_object = context.game_objects[object_alias]
         size = moved_object.border_rect.get_size()
 
@@ -21,13 +21,13 @@ class ObjectMove(Command.Command):
             moved_object.move(move_vector)
             result = True
         else:
-            self.send_collision(moved_object, collisions)
+            self._send_collision(moved_object, collisions)
 
         return result
 
-    def send_collision(self, moved_object, collision):
+    def _send_collision(self, moved_object, collision):
         for i_collision in collision:
             i_collision.collision(moved_object)
 
-    def get_params(self):
+    def _get_params(self):
         return self.params['alias'], self.params['move_vector']
