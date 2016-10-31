@@ -15,11 +15,11 @@ class Quadtree:
             "lb": None
         }
 
-    # Вписывается ли объект в узел
+    """ Вписывается ли объект в узел """
     def _check_object(self, object_rect):
         return self.rect.check_in_rect(object_rect)
 
-    # Разбить узел на дочерние прямоугольники
+    """ Разбить узел на дочерние прямоугольники """
     def _get_child_rect(self):
         self_size = self.rect.get_size()
         self_position = self.rect.get_position()
@@ -82,10 +82,9 @@ class Quadtree:
 
         return result
 
-    def update(self, object_value, new_object_rect, old_object_rect):
+    def update(self, object_value, old_object_rect, new_object_rect):
         self.delete(object_value, old_object_rect)
         return self.add(object_value, new_object_rect)
-
 
     def find(self, zone_rect, result):
         if self._check_object(zone_rect):
