@@ -1,6 +1,56 @@
-from core.GameState import GameState
+import core
+import lib.GeometryObject as Geometry
 
 import tornado.ioloop
+
+
+game_factory_classes = {
+    'object': {
+        'class': core.GameObject
+    },
+    'player': {
+        'class': core.Player
+    },
+    'wall': {
+        'class': core.Wall
+    }
+}
+
+test_config = {
+    'state': {
+        'width': 1100,
+        'height': 1100,
+    },
+    'objects': [
+        {
+            'class': 'wall',
+            'geometry': {
+                'width': 10,
+                'height': 100,
+                'position': [10, 10]
+            },
+            'graphic': None
+        },
+        {
+            'class': 'wall',
+            'geometry': {
+                'width': 100,
+                'height': 10,
+                'position': [20, 10]
+            },
+            'graphic': None
+        },
+        {
+            'class': 'wall',
+            'geometry': {
+                'width': 100,
+                'height': 10,
+                'position': [100, 10]
+            },
+            'graphic': None
+        }
+    ]
+}
 
 
 class GamePool:
@@ -9,9 +59,8 @@ class GamePool:
 
     def new_game(self):
         ioloop_instance = tornado.ioloop.IOLoop.instance()
-        game = GameState(1000, 1000)
+        game = self.build_state(test_config)
         self.state_pool.append(game)
-        # TODO: game_state_factory
         # закидываем игру в основной цикл сервера
         ioloop_instance.add_callback(game.game_loop)
         return game
@@ -31,3 +80,27 @@ class GamePool:
             if not game.is_full():
                 return game
         return None
+
+    def build_state(self, config):
+        new_state = core.GameState(config['state']['width'], config['state']['height'])
+        game_objects = []
+        for obj_conf in config:
+            game_objects.append(self.build_object(obj_conf, new_state.map_index))
+        new_state.create_map(game_objects)
+
+    def build_object(self, config, map_index):
+        object_class = self.get_factory_class(config['class'])
+        rect_config = config['geometry']
+        graphic_config = config['graphic']
+        point = Geometry.Point(rect_config['position'][0], rect_config['position'][1])
+        params = {
+            'geometry': Geometry.Rectangle(rect_config['width'], rect_config['height'], point),
+            'map_index': map_index,
+            'graphic': None
+        }
+        # TODO: Добавить парсинг доп параметров
+        return object_class(**params)
+
+    @staticmethod
+    def get_factory_class(class_code):
+        return game_factory_classes[class_code]['class']

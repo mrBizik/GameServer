@@ -9,6 +9,7 @@ from GamePool import GamePool
 
 from lib.SequenceGenerator import Sequence
 
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('templates/index.html')

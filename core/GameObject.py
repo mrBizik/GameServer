@@ -1,4 +1,4 @@
-import lib.GeometryObject as Gobj
+import lib.GeometryObject as Geometry
 
 
 class GameObject:
@@ -23,13 +23,13 @@ class GameObject:
         point = self._get_vector_speed(move_vector)
         size = self.geometry_model.get_size()
         old_position = self.geometry_model.get_border_rect().get_position()
-        old_rect = Gobj.Rencagle(size[0], size[1], Gobj.Point(old_position[0], old_position[1]))
+        old_rect = Geometry.Rencagle(size[0], size[1], Geometry.Point(old_position[0], old_position[1]))
         new_rect = old_rect
         # проверяем можно ли переместиться в заданную точку
         self.bored = self._bordered_object(point)
         if len(self.bored) == 0:
             new_position = self.geometry_model.move(point.x, point.y)
-            new_rect = Gobj.Rencagle(size[0], size[1], Gobj.Point(new_position[0], new_position[1]))
+            new_rect = Geometry.Rencagle(size[0], size[1], Geometry.Point(new_position[0], new_position[1]))
             self.map_index.update(self, old_rect, new_rect)
         else:
             self.collisions()
@@ -43,7 +43,7 @@ class GameObject:
     def _bordered_object(self, move_point):
         size = self.geometry_model.get_size()
         position = self.geometry_model.get_border_rect().get_position()
-        rect = Gobj.Rencagle(size[0], size[1], Gobj.Point(position[0], position[1]))
+        rect = Geometry.Rencagle(size[0], size[1], Geometry.Point(position[0], position[1]))
         rect.move(move_point[0], move_point[1])
         return self.map_index.find(rect, [])
 
@@ -58,12 +58,12 @@ class GameObject:
     def _get_vector_speed(self, move_vector):
         speed = self.speed
         if move_vector == 'UP':
-            return Gobj.Point(0, -1 * speed)
+            return Geometry.Point(0, -1 * speed)
         elif move_vector == 'DOWN':
-            return Gobj.Point(0, speed)
+            return Geometry.Point(0, speed)
         elif move_vector == 'LEFT':
-            return Gobj.Point(-1 * speed, 0)
+            return Geometry.Point(-1 * speed, 0)
         elif move_vector == 'RIGHT':
-            return Gobj.Point(speed, 0)
+            return Geometry.Point(speed, 0)
         else:
-            return Gobj.Point(0, 0)
+            return Geometry.Point(0, 0)

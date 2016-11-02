@@ -1,5 +1,5 @@
-import lib.GeometryObject as Gobj
-import lib.DataIndex as Dindex
+import lib.GeometryObject as Geometry
+import lib.DataIndex as DataIndex
 
 import core.GameObject as Object
 from core.Player import Player
@@ -12,9 +12,9 @@ import queue
 
 class GameState:
     def __init__(self, width, height):
-        self.map_size = Gobj.Rectangle(width, height, Gobj.Point(0, 0))
+        self.map_size = Geometry.Rectangle(width, height, Geometry.Point(0, 0))
         self.map_objects = []
-        self.map_index = Dindex.Quadtree(self.map_size)
+        self.map_index = DataIndex.Quadtree(self.map_size)
         # Список игроков, участвующих в игре, необходим для проверки подлиности запросов
         self.players = []
         self.max_players = 4
@@ -44,8 +44,9 @@ class GameState:
         self._on_update()
         ioloop_instance.add_callback(self.game_loop)
 
-    def create_map(self, game_objects):
-        pass
+    def create_map(self, map_objects):
+        # TODO: Возможно стоит вообще отказаться от этого метода
+        self.map_objects = map_objects
 
     def add_player(self, user_id, callback = None):
         if not self._is_full():
