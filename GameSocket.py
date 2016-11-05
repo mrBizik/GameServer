@@ -17,12 +17,9 @@ class GameSocket(Socket.RPCWSocket):
         }
         return result
 
-    def _on_state_update(self, state):
-        # стейт передаем в коллбэк
-        # если стейт вычитывать в коллбэке,
-        # то есть вероятность вычитать более новую версию,
-        # а это не есть хорошо
-        self.write_message(state)
+    def _on_state_update(self):
+        # TODO: Выдавать нормально весь объект
+        self.write_message(self.game_state.map_objects)
 
     def _close_socket(self):
         self.game_state.leave(self.user.id)

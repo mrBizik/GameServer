@@ -1,4 +1,7 @@
-import core
+import core.GameObject
+import core.Player
+import core.Wall
+import core.GameState
 import lib.GeometryObject as Geometry
 
 import tornado.ioloop
@@ -6,13 +9,13 @@ import tornado.ioloop
 
 game_factory_classes = {
     'object': {
-        'class': core.GameObject
+        'class': core.GameObject.GameObject
     },
     'player': {
-        'class': core.Player
+        'class': core.Player.Player
     },
     'wall': {
-        'class': core.Wall
+        'class': core.Wall.Wall
     }
 }
 
@@ -28,8 +31,7 @@ test_config = {
                 'width': 10,
                 'height': 100,
                 'position': [10, 10]
-            },
-            'graphic': None
+            }
         },
         {
             'class': 'wall',
@@ -37,8 +39,7 @@ test_config = {
                 'width': 100,
                 'height': 10,
                 'position': [20, 10]
-            },
-            'graphic': None
+            }
         },
         {
             'class': 'wall',
@@ -46,8 +47,7 @@ test_config = {
                 'width': 100,
                 'height': 10,
                 'position': [100, 10]
-            },
-            'graphic': None
+            }
         }
     ]
 }
@@ -82,21 +82,20 @@ class GamePool:
         return None
 
     def build_state(self, config):
-        new_state = core.GameState(config['state']['width'], config['state']['height'])
+        new_state = core.GameState.GameState(config['state']['width'], config['state']['height'])
         game_objects = []
-        for obj_conf in config:
+        for obj_conf in config['objects']:
             game_objects.append(self.build_object(obj_conf, new_state.map_index))
         new_state.create_map(game_objects)
+        return new_state
 
     def build_object(self, config, map_index):
         object_class = self.get_factory_class(config['class'])
         rect_config = config['geometry']
-        graphic_config = config['graphic']
         point = Geometry.Point(rect_config['position'][0], rect_config['position'][1])
         params = {
             'geometry': Geometry.Rectangle(rect_config['width'], rect_config['height'], point),
-            'map_index': map_index,
-            'graphic': None
+            'map_index': map_index
         }
         # TODO: Добавить парсинг доп параметров
         return object_class(**params)

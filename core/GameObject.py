@@ -2,13 +2,11 @@ import lib.GeometryObject as Geometry
 
 
 class GameObject:
-    def __init__(self, geometry, speed, map_index, graphic):
+    def __init__(self, geometry, speed, map_index):
         self.geometry_model = geometry
         self.map_index = map_index
         self.bored = []
         self.speed = speed
-        # графика
-        self.graphic_model = graphic
         # добавляем статический объект в мап индекс
         if speed == 0:
             map_index.add(self, self.geometry_model.get_border_rect())

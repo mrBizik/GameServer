@@ -1,7 +1,7 @@
 import lib.GeometryObject as Geometry
 import lib.DataIndex as DataIndex
 
-import core.GameObject as Object
+# import core.GameObject as Object
 from core.Player import Player
 
 import tornado.gen
@@ -48,9 +48,11 @@ class GameState:
         # TODO: Возможно стоит вообще отказаться от этого метода
         self.map_objects = map_objects
 
-    def add_player(self, user_id, callback = None):
+    def add_player(self, user_id, callback=None):
         if not self._is_full():
-            # player = Player(user_id, callback, ....)
+            point = Geometry.Point(0, 0)
+            rect = Geometry.Rectangle(50, 50, point)
+            player = Player(user_id, callback, rect, 10, self.map_index)
             self.players.append(player)
             return player
         else:
@@ -64,7 +66,8 @@ class GameState:
 
     def _on_update(self):
         for player in self.players:
-            player.listener()
+            if player.listener:
+                player.listener()
 
     def stop_game(self):
         pass
