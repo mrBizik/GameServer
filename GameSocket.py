@@ -19,7 +19,7 @@ class GameSocket(Socket.RPCWSocket):
 
     def _on_state_update(self):
         # TODO: Выдавать нормально весь объект
-        self.write_message(self.game_state.map_objects)
+        self.write_message(self.game_state.get_state())
 
     def _close_socket(self):
         self.game_state.leave(self.user.id)

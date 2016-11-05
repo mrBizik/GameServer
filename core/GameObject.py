@@ -14,6 +14,18 @@ class GameObject:
     def __del__(self):
         self.map_index.delete(self, self.geometry_model.get_border_rect())
 
+    def get(self):
+        size = self.geometry_model.get_size()
+        position = self.geometry_model.get_border_rect().get_position()
+        return {
+            'speed': self.speed,
+            'geometry': {
+                'width': size[0],
+                'height': size[1],
+                'position': [position[0], position[1]]
+            }
+        }
+
     def get_geometry(self):
         return self.geometry_model
 

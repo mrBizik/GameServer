@@ -71,3 +71,21 @@ class GameState:
 
     def stop_game(self):
         pass
+
+    def get_state(self):
+        map_size = self.map_size.get_size()
+        result = {
+            'map': [],
+            'players': [],
+            'map_size': {
+                'width': map_size[0],
+                'height': map_size[1]
+            }
+        }
+
+        for map_i in self.map_objects:
+            result['map'].append(map_i.get())
+
+        for player_i in self.players:
+            result['players'].append(player_i.get())
+        return result
