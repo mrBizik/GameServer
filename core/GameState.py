@@ -1,7 +1,6 @@
 import lib.GeometryObject as Geometry
 import lib.DataIndex as DataIndex
 
-# import core.GameObject as Object
 from core.Player import Player
 
 import tornado.gen

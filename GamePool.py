@@ -100,6 +100,5 @@ class GamePool:
         # TODO: Добавить парсинг доп параметров
         return object_class(**params)
 
-    @staticmethod
-    def get_factory_class(class_code):
+    def get_factory_class(self, class_code):
         return game_factory_classes[class_code]['class']

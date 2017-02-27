@@ -18,7 +18,6 @@ class GameSocket(Socket.RPCWSocket):
         return result
 
     def _on_state_update(self):
-        # TODO: Выдавать нормально весь объект
         self.write_message(self.game_state.get_state())
 
     def _close_socket(self):
@@ -27,19 +26,18 @@ class GameSocket(Socket.RPCWSocket):
     def new_game(self, *args):
         self.game_state = self.application.game_pool.new_game()
         self.game_state.add_player(self.user.id, self._on_state_update)
-        # TODO: отдать сгенерированный стейт
-        self.write_message({"ready": True, "state": None})
+        self.write_message({"ready": True, "state": self.game_state.get_state()})
 
     def connect_game(self, *args):
-        params = self._parse_params(["id_game"], *args)
+        # params = self._parse_params(["id_game"], *args)
         self.game_state = self.application.game_pool.connect_to_game()
-        # TODO: отдать сгенерированный стейт
-        self.write_message({"ready": True, "state": None})
+        self.write_message({"ready": True, "state": self.game_state.get_state()})
 
     def move(self, *args):
-        params = self._parse_params(["x", "y"], *args)
-        params["user"] = self.user.id
+        # params = self._parse_params(["x", "y"], *args)
+        # params["user"] = self.user.id
         # self.game_state.command_push(ObjectMove(params))
+        pass
 
     def leave_game(self, *args):
         self.game_state.leave_game(self.user.id)
