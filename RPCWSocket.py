@@ -28,7 +28,7 @@ class RPCWSocket(tornado.websocket.WebSocketHandler):
       Разобрать json полученный от клиента
     """
     def _parse_message(self, message):
-        parsed =  json.loads(message)
+        parsed = json.loads(message)
         return parsed["method"], parsed["params"], parsed["id"]
 
     """
@@ -60,7 +60,6 @@ class RPCWSocket(tornado.websocket.WebSocketHandler):
         except ValueError:
             print("ValueError")
             self.write_message(None, {"code": -32601, "message": "Method not found"})
-
 
     def on_close(self):
         self._close_socket()

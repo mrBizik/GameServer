@@ -1,4 +1,4 @@
-class Sequence():
+class Sequence:
     def __init__(self):
         self.current_value = -1
 
@@ -13,8 +13,9 @@ class Sequence():
         self.current_value = -1
 
 
-class GlobalSequence():
+class GlobalSequence:
     current_value = -1
+
     def __init__(self):
         return
 

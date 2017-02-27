@@ -11,9 +11,8 @@ class Point:
         self.y += dy
         return self.get_position()
 
-    def update_position(self, point):
-        self.x = point.x
-        self.y = point.y
+    def get_border_rect(self):
+        return None
 
 
 class Rectangle(Point):
@@ -21,8 +20,7 @@ class Rectangle(Point):
         self.width = width
         self.height = height
         position_arr = position.get_position()
-        self.x = position_arr[0]
-        self.y = position_arr[1]
+        super(Rectangle, self).__init__(position_arr[0], position_arr[1])
 
     def get_size(self):
         return [self.width, self.height]
@@ -47,8 +45,8 @@ class Rectangle(Point):
 
         return result
 
-    # Возвращает вершины прямоугольника
     def get_apex(self):
+        """ Возвращает вершины прямоугольника """
         return [
             Point(self.x, self.y),
             Point(self.x + self.width, self.y),
@@ -56,8 +54,8 @@ class Rectangle(Point):
             Point(self.x + self.width, self.y + self.height)
         ]
 
-    # Пересекается ли с rect
     def check_intersection(self, rect):
+        """  Пересекается ли с rect """
         if type(rect) != Rectangle:
             raise Exception('Error', 'Invalid type rect')
 
@@ -66,3 +64,6 @@ class Rectangle(Point):
                 return True
 
         return False
+
+    def get_border_rect(self):
+        return self

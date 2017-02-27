@@ -1,34 +1,79 @@
-import lib.GeometryObject as Gobj
+import lib.GeometryObject as Geometry
 
 
 class GameObject:
-    def __init__(self, alias, width, height, x, y, speed):
-        self.alias = alias
-        # Ограничивающий прямоугольник объекта
-        # Но т.к. в данной версии движка все объекты прямоугольники
-        # то по-сути это размер+позиция объекта
-        self.border_rect = Gobj.Rectangle(width, height, Gobj.Point(x, y))
+    def __init__(self, geometry, speed, map_index):
+        self.geometry_model = geometry
+        self.map_index = map_index
+        self.bored = []
         self.speed = speed
+        # добавляем статический объект в мап индекс
+        if speed == 0:
+            map_index.add(self, self.geometry_model.get_border_rect())
+
+    def __del__(self):
+        self.map_index.delete(self, self.geometry_model.get_border_rect())
+
+    def get(self):
+        size = self.geometry_model.get_size()
+        position = self.geometry_model.get_border_rect().get_position()
+        return {
+            'speed': self.speed,
+            'geometry': {
+                'width': size[0],
+                'height': size[1],
+                'position': [position[0], position[1]]
+            }
+        }
+
+    def get_geometry(self):
+        return self.geometry_model
 
     def move(self, move_vector):
-        new_position = self.get_moved_position(move_vector)
-        self.border_rect.update_position(new_position)
-        return new_position
+        point = self._get_vector_speed(move_vector)
+        size = self.geometry_model.get_size()
+        old_position = self.geometry_model.get_border_rect().get_position()
+        old_rect = Geometry.Rencagle(size[0], size[1], Geometry.Point(old_position[0], old_position[1]))
+        new_rect = old_rect
+        # проверяем можно ли переместиться в заданную точку
+        self.bored = self._bordered_object(point)
+        if len(self.bored) == 0:
+            new_position = self.geometry_model.move(point.x, point.y)
+            new_rect = Geometry.Rencagle(size[0], size[1], Geometry.Point(new_position[0], new_position[1]))
+            self.map_index.update(self, old_rect, new_rect)
+        else:
+            self.collisions()
+        return new_rect
 
-    def get_moved_position(self, move_vector):
+    """ Для преобразования в строку и дальнешей отправки клиенту """
+    def parse(self):
+        pass
+
+    """ Проверить нет ли объекта в том месте, куда хотим сдвинуться """
+    def _bordered_object(self, move_point):
+        size = self.geometry_model.get_size()
+        position = self.geometry_model.get_border_rect().get_position()
+        rect = Geometry.Rencagle(size[0], size[1], Geometry.Point(position[0], position[1]))
+        rect.move(move_point[0], move_point[1])
+        return self.map_index.find(rect, [])
+
+    def collisions(self):
+        for obj in self.bored:
+            self._is_collision(obj)
+
+    """ Выполнить действия в зависимости от объекта, с которыми столкнулись """
+    def _is_collision(self, obj):
+        pass
+
+    def _get_vector_speed(self, move_vector):
         speed = self.speed
-        position = self.border_rect.get_position()
-        new_position = Gobj.Point(position[0], position[1])
         if move_vector == 'UP':
-            new_position.move(0, (-1) * speed)
-        if move_vector == 'DOWN':
-            new_position.move(0, speed)
-        if move_vector == 'LEFT':
-            new_position.move((-1) * speed, 0)
-        if move_vector == 'RIGHT':
-            new_position.move(speed, 0)
-
-        return new_position
-
-    def collision(self, object_from):
-        return True
+            return Geometry.Point(0, -1 * speed)
+        elif move_vector == 'DOWN':
+            return Geometry.Point(0, speed)
+        elif move_vector == 'LEFT':
+            return Geometry.Point(-1 * speed, 0)
+        elif move_vector == 'RIGHT':
+            return Geometry.Point(speed, 0)
+        else:
+            return Geometry.Point(0, 0)
