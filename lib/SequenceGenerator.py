@@ -1,3 +1,5 @@
+# TODO: To yield
+
 class Sequence:
     def __init__(self):
         self.current_value = -1

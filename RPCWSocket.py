@@ -45,7 +45,7 @@ class RPCWSocket(tornado.websocket.WebSocketHandler):
         return result
 
     def open(self, *args, **kwargs):
-        print("self._open_message()")
+        pass
 
     """
       Обертка для получения сообщения
