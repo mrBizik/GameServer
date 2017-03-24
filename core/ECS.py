@@ -1,16 +1,25 @@
 import queue
 
-
-def sort_by_order(item):
-    return item.order
+from core.GameBuilder import Builder
 
 
 class ECS:
-    def __init__(self):
+    def __init__(self, config):
         self.systems = []
         self.entities = []
         self.commands = queue.Queue()
         self.id = None
+        self.config = config
+
+    def init_game(self):
+        for system in Builder.build_systems():
+            # TODO: order!!!
+            self.add_system(system, 1)
+        for entity in Builder.build_entities(self.config["entities"]):
+            self.add_entity(entity)
+
+    def get_config(self, type):
+        return self.config
 
     def set_id(self, id):
         self.id = id
@@ -20,7 +29,7 @@ class ECS:
         # my crazy means of system
         system.order = order
         self.systems.append(system)
-        self.systems.sort(key=sort_by_order)
+        self.systems.sort(key=lambda item: item.order)
 
     ''' Calls every game_loop iteration '''
     def update_systems(self, timestamp):
@@ -31,7 +40,7 @@ class ECS:
         for system in self.systems:
             system.update(self, timestamp, command)
 
-    ''' Push new command for excecute in  future '''
+    ''' Push new command for execute in  future '''
     def push_command(self, command):
         self.commands.put_nowait(command)
 
@@ -46,6 +55,9 @@ class ECS:
         for entity in self.entities:
             if entity.id == id:
                 return entity
+
+    def game_loop(self):
+        self.update_systems(1)
 
 
 class Entity:
@@ -63,7 +75,7 @@ class Entity:
 
 
 class Component:
-    def __init__(self):
+    def __init__(self, config):
         pass
 
     def update(self, timestamp):
@@ -74,7 +86,7 @@ class Component:
 
 
 class System:
-    def __init__(self):
+    def __init__(self, config):
         pass
 
     def update(self, ecs, timestamp, command):
