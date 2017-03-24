@@ -1,62 +1,66 @@
-import core.Systems
-import core.Components
-import core.Entities
-
-
 class Builder:
-    def __init__(self):
-        self.entities = self._create_class_map(core.Entities, 'core.Entities')
-        self.components = self._create_class_map(core.Components, 'core.Components')
-        self.systems = self._create_class_map(core.Systems, 'core.Systems')
+    entities = None
+    components = None
+    systems = None
 
-    def _create_class_map(self, module, module_name):
+    @staticmethod
+    def init(systems_module, entities_module, components_module):
+        Builder.entities = Builder._create_module_map(entities_module)
+        Builder.components = Builder._create_module_map(components_module)
+        Builder.systems = Builder._create_module_map(systems_module)
+
+    @staticmethod
+    def _create_module_map(module):
         result = {}
         for class_name in dir(module):
-            if self._is_builded(class_name):
-                class_obj = self._get_module_item([module_name, class_name])
-                result[class_name] = class_obj
+            if Builder._is_build(class_name):
+                result[class_name] = eval(".".join(["module", class_name]))
         return result
 
     @staticmethod
-    def _get_module_item(path):
-        return eval('.'.join(path))
+    def _is_build(item_name):
+        return not item_name.startswith("_") and item_name != "engine"
 
     @staticmethod
-    def _is_builded(item_name):
-        return not item_name.startswith('_') and item_name != 'ECS'
-
-    def build_entities(self, config):
-        for item in config:
-            entity_class = self.entities[item['type']]
+    def build_entities(conf):
+        for item in conf:
+            entity_class = Builder.entities[item["type"]]
             entity_components = []
-            for comp in item['config']:
-                entity_components.append(self.create_component(comp))
+            for component in item["config"]:
+                entity_components.append(Builder.create_component(component["type"], component["params"]))
 
-            yield entity_class(item['id'], entity_components)
+            yield entity_class(item["id"], entity_components)
 
-    def create_component(self, config):
-        return config
+    @staticmethod
+    def create_component(type_name, params):
+        return Builder.components[type_name](params)
 
-    def build_systems(self):
-        # for system in system_arr:
-        #     yield system()
-        pass
+    @staticmethod
+    def build_systems():
+        for name in Builder.systems:
+            yield Builder.systems[name]()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     config = [
         {
-            'type': 'Player',
-            'config': [],
-            'id': 1
+            "type": "Player",
+            "config": [
+                {
+                    "type": "MoveComponent",
+                    "params": {
+                        "x": 0,
+                        "y": 0,
+                        "speed": 1
+                    }
+                }
+            ],
+            "id": 1
         },
         {
-            'type': 'Player',
-            'config': [],
-            'id': 2
+            "type": "Player",
+            "config": [],
+            "id": 2
         }
     ]
-    builder = Builder()
-    print(str(builder.entities))
-    for entity in builder.build_entities(config):
-        print(str(entity.id))
+
