@@ -1,6 +1,6 @@
-import core.ECS as ECS
+from core.ECS import Entity as _Entity
 
 
-class Player(ECS.Entity):
-    def __init__(self, id, config):
-        super(Player, self).__init__(id, config)
+class Player(_Entity):
+    def __init__(self, identity, components):
+        super(Player, self).__init__(identity, components)

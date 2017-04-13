@@ -21,8 +21,9 @@ class ECS:
     def get_config(self, type):
         return self.config
 
-    def set_id(self, id):
-        self.id = id
+    def set_id(self, identity):
+        self.id = identity
+        self.config["game_id"] = identity
 
     ''' Add new system into engine '''
     def add_system(self, system, order):
@@ -61,8 +62,8 @@ class ECS:
 
 
 class Entity:
-    def __init__(self, id, components):
-        self.id = id
+    def __init__(self, identity, components):
+        self.id = identity
         self.components = {}
         for component in components:
             self.components[str(type(component))] = component

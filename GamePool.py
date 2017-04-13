@@ -1,14 +1,67 @@
-import core.ECS as ECS
-import core.GameBuilder as GameBuilder
+from core.ECS import ECS
+from core.GameBuilder import Builder
+
+import core.Systems
+import core.Components
+import core.Entities
+
+_config = {
+    "entities": [
+        {
+            "type": "Player",
+            "id": 1,
+            "config": [
+                {
+                    "type": "Geometry",
+                    "config": {
+                        "width": 128,
+                        "height": 128,
+                        "x": 128,
+                        "y": 128,
+                    }
+                },
+                {
+                    "type": "Render",
+                    "config": {
+                        "width": 512,
+                        "height": 128,
+                        "x": 0,
+                        "y": 0,
+                        "animationParams": {
+                            "speed": 20,
+                            "frameCount": 4
+                        }
+                    }
+                },
+                {
+                    "type": "Move",
+                    "config": {
+                        "speed": 10
+                    }
+                }
+            ]
+        }
+    ],
+    "resources": {
+        "atlas": "./img/smurfic.jpg",
+        "sound": []
+    }
+}
 
 
 class GamePool:
     def __init__(self):
         self.pool = []
+        Builder.init(core.Systems, core.Entities, core.Components)
+
+    def _push(self, game):
+        self.pool.append(game)
+        return len(self.pool)
 
     def new_game(self):
-        game = ECS.ECS()
-        game.set_id(self.pool.append(self._init_game(game, None)))
+        game = ECS(_config)
+        game.init_game()
+        game.set_id(self._push(game))
         return game
 
     def connect_to_game(self, id_game=None):
@@ -25,11 +78,3 @@ class GamePool:
         for game in self.pool:
             return game
         return None
-
-    def _init_game(self, game, config):
-        # TODO: for ECS test
-        # for system in GameBuilder.build_system():
-        #     game.add_system(system)
-        # for entity in GameBuilder.build_entities(config):
-        #     game.add_entity(entity)
-        return {'id': 1, 'name': 'test'}

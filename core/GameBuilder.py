@@ -27,7 +27,7 @@ class Builder:
             entity_class = Builder.entities[item["type"]]
             entity_components = []
             for component in item["config"]:
-                entity_components.append(Builder.create_component(component["type"], component["params"]))
+                entity_components.append(Builder.create_component(component["type"], component["config"]))
 
             yield entity_class(item["id"], entity_components)
 
@@ -39,28 +39,3 @@ class Builder:
     def build_systems():
         for name in Builder.systems:
             yield Builder.systems[name]()
-
-
-if __name__ == "__main__":
-    config = [
-        {
-            "type": "Player",
-            "config": [
-                {
-                    "type": "MoveComponent",
-                    "params": {
-                        "x": 0,
-                        "y": 0,
-                        "speed": 1
-                    }
-                }
-            ],
-            "id": 1
-        },
-        {
-            "type": "Player",
-            "config": [],
-            "id": 2
-        }
-    ]
-

@@ -6,14 +6,15 @@ import RPCWSocket as Socket
 import json
 
 
-# class MainHandler(web.RequestHandler):
-#     def get(self, *args, **kwargs):
-#         self.set_secure_cookie("user_id", self.get_argument("user_id"))
-#         self.render("templates/index.html")
+class TestHandler(web.RequestHandler):
+    def post(self, *args, **kwargs):
+        self.set_header('Access-Control-Allow-Origin', '*')
+        self.render("templates/index.html", result=self.get_argument("test"))
 
 
 class GameHandler(web.RequestHandler):
-    def get(self, *args, **kwargs):
+    def post(self, *args, **kwargs):
+        self.set_header('Access-Control-Allow-Origin', '*')
         action = self.get_argument("action")
         params = None
         result = None

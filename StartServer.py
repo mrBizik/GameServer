@@ -24,6 +24,7 @@ class Application(web.Application):
             # (r"/game/(.*)", game_handlers.GameHandler),
             # TODO: разобраться с кэшированием, возможно отдавать статику ч-з nginx
             (r"/static/(.*)", web.StaticFileHandler, {"path": "static/"}),
+            (r"/test/(.*)", game_handlers.TestHandler),
         )
 
         web.Application.__init__(self, handlers, **settings)
