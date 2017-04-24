@@ -66,15 +66,20 @@ class GamePool:
 
     def connect_to_game(self, id_game=None):
         game_state = None
-        try:
-            if id_game:
-                game_state = self.pool[id_game]
-            else:
-                game_state = self.search_game()
-        finally:
-            return game_state
+        if id_game:
+            game_state = self.get_game(id_game)
+        else:
+            game_state = self.search_game()
+        return game_state
 
     def search_game(self):
         for game in self.pool:
             return game
         return None
+
+    def get_game(self, id_game):
+        game_state = None
+        try:
+            game_state = self.pool[id_game]
+        finally:
+            return game_state

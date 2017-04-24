@@ -38,4 +38,4 @@ class Builder:
     @staticmethod
     def build_systems():
         for name in Builder.systems:
-            yield Builder.systems[name]()
+            yield Builder.systems[name](None)
