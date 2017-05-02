@@ -11,6 +11,7 @@ class Render(_Component):
         # super(Render, self).__init__([], config)
         pass
 
+
 class Geometry(_Component):
     def __init__(self, config):
         super(Geometry, self).__init__(['x', 'y', 'width', 'height'], config)

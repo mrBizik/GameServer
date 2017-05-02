@@ -45,27 +45,29 @@ class GameHandler(web.RequestHandler):
         if game:
             ioloop.IOLoop.instance().add_callback(game.game_loop)
             self._connect_to_game(game.id)
-            # TODO: Беда с куками
-            # self.set_cookie('game_id', game.id)
+            self.set_cookie('game_id', str(game.id))
             game_config = game.get_config('frontend')
         return game_config
 
     def _register_user(self):
-        return self.application.next_user_id.next()
+        if not self.get_cookie('user_id'):
+            self.set_cookie('user_id', str(self.application.next_user_id.next()))
 
 
 class GameSocket(Socket.RPCWSocket):
     def __init__(self, application, request, **kwargs):
         super(GameSocket, self).__init__(application, request, **kwargs)
-        self.user_id = self.get_secure_cookie('user_id')
-        self.game = self.application.game_pool.get_game(self.get_secure_cookie('game_id'))
+        self.user_id = self.get_cookie('user_id')
+        self.game = self.application.game_pool.get_game(self.get_cookie('game_id'))
         self.game.add_game_listener(self._on_game_update)
 
-    def _on_game_update(self):
-        self.write_message(self.game)
+    def _on_game_update(self, token_list):
+        self.write_message(token_list.get())
 
     def _close_socket(self):
-        pass
+        print('close_socket')
 
     def move(self, params):
-        self.game.push_command(Commands.Move(params, self.user_id))
+        params['id'] = self.user_id
+        command = Commands.Move(params, self.game)
+        command()
