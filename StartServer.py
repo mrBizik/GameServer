@@ -1,38 +1,36 @@
-import json
+import tornado.web as web
+import tornado.ioloop as ioloop
 
-import tornado.web
-import tornado.ioloop
-
-import GameSocket
-
+import Handlers as game_handlers
 from GamePool import GamePool
 
 from lib.SequenceGenerator import Sequence
 
 
-class MainHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render('templates/index.html')
-
-
-class Application(tornado.web.Application):
+class Application(web.Application):
     def __init__(self):
         self.next_user_id = Sequence()
         self.game_pool = GamePool()
 
+        settings = {
+            "cookie_secret": "__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
+            "login_url": "/login",
+            # TODO: true
+            "xsrf_cookies": False,
+        }
+
         handlers = (
-            (r'/', MainHandler),
-            (r'/game/(.*)', GameSocket.GameSocket),
+            (r"/", game_handlers.GameHandler),
+            (r"/socket/", game_handlers.GameSocket),
+            # (r"/game/(.*)", game_handlers.GameHandler),
             # TODO: разобраться с кэшированием, возможно отдавать статику ч-з nginx
-            (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'static/'}),
+            (r"/static/(.*)", web.StaticFileHandler, {"path": "static/"}),
+            (r"/test/(.*)", game_handlers.TestHandler),
         )
 
-        # TODO: заменить на super?
-        tornado.web.Application.__init__(self, handlers)
+        web.Application.__init__(self, handlers, **settings)
 
-application = Application()
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
+    application = Application()
     application.listen(8888)
-    tornado.ioloop.IOLoop.instance().start()
+    ioloop.IOLoop.instance().start()
