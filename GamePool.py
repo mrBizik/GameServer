@@ -9,7 +9,8 @@ _config = {
     "entities": [
         {
             "type": "Player",
-            "id": 1,
+            # TODO: Idшники выставляются во время создания сущностей, надо чтобы на фронт попадало все верно
+            "id": 0,
             "config": [
                 {
                     "type": "Geometry",
@@ -27,10 +28,9 @@ _config = {
                         "height": 128,
                         "x": 0,
                         "y": 0,
-                        "animationParams": {
-                            "speed": 20,
-                            "frameCount": 4
-                        }
+                        "speed": 20,
+                        "frameCount": 4,
+                        "animationSpeed": 10
                     }
                 },
                 {

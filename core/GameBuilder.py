@@ -27,8 +27,10 @@ class Builder:
             entity_class = Builder.entities[item["type"]]
             entity_components = []
             for component in item["config"]:
-                entity_components.append(Builder.create_component(component["type"], component["config"]))
-
+                entity_components.append({
+                    'component': Builder.create_component(component["type"], component["config"]),
+                    'name': component["type"]
+                })
             yield entity_class(item["id"], entity_components)
 
     @staticmethod

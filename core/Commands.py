@@ -21,5 +21,5 @@ class Move(Command):
         else:
             y += move.get_value('speed')
 
-        entity.update({'Geometry': {'x': x, 'y': y}}, self.tokens.new())
+        entity.update({'Geometry': {'x': x, 'y': y}}, self.tokens.new_token())
         self.context.fire_update(self.tokens)

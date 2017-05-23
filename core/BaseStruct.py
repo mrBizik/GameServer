@@ -23,26 +23,32 @@ class SystemList:
     def order(self):
         self.systems.sort(key=lambda item: item.order)
 
-    def update_systems(self, timestamp):
+    def update_systems(self, context, timestamp):
         for system in self.systems:
-            system.update(self, timestamp)
+            system.update(context, timestamp)
 
 
 class Token:
     def __init__(self):
         self.id_entity = None
-        self.components = None
+        self.component_values = None
+        self.component_name = None
+        self.timestamp = None
 
-    def set(self, id_entity, component_name, component):
-        if self.id_entity and self.id_entity != id_entity:
-            raise Exception('Токен уже использовался с другой сущьностью id_entity=' + self.id_entity)
+    def set(self, id_entity, component_name, component, timestamp = 0):
+        if self.id_entity:
+            raise Exception('Токен уже использовался')
         self.id_entity = id_entity
-        self.components.append({component_name: component})
+        self.component_values = component.get()
+        self.component_name = component_name
+        self.timestamp = timestamp
 
     def get(self):
         return {
             'id': self.id_entity,
-            'components': self.components
+            'component_name': self.component_name,
+            'component': self.component_values,
+            'timestamp': self.timestamp
         }
 
 
@@ -50,13 +56,16 @@ class TokenList:
     def __init__(self):
         self.tokens = []
 
-    def new(self):
+    def new_token(self):
         token = Token()
         self.tokens.append(token)
         return token
 
     def get(self):
         result = []
+        self.tokens.sort(key=lambda item: item.timestamp)
+        # TODO: А может через token.get()?
+        # return self.tokens
         for token in self.tokens:
             result.append(token.get())
         return result

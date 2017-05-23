@@ -21,7 +21,7 @@ class Application(web.Application):
 
         handlers = (
             (r"/", game_handlers.GameHandler),
-            (r"/socket/(.*)", game_handlers.GameSocket),
+            (r"/socket/", game_handlers.GameSocket),
             # (r"/game/(.*)", game_handlers.GameHandler),
             # TODO: разобраться с кэшированием, возможно отдавать статику ч-з nginx
             (r"/static/(.*)", web.StaticFileHandler, {"path": "static/"}),

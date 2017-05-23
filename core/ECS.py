@@ -1,5 +1,6 @@
 from core.GameBuilder import Builder
 from core.BaseStruct import EntityList, SystemList, TokenList
+import copy
 
 
 class ECS:
@@ -27,7 +28,7 @@ class ECS:
 
     def game_loop(self):
         token_list = TokenList()
-        self.systems.update_systems(1)
+        self.systems.update_systems(self, 1)
         self.fire_update(token_list)
 
     # TODO: Костыль для обновления слушателей, после выполнения команды
@@ -41,21 +42,20 @@ class ECS:
 
 
 class Entity:
-    def __init__(self, identity, components):
+    def __init__(self, identity, components_config):
         # TODO: id задается после добавления в ECS объект, необходимо выпилить задание id при создании
         self.id = identity
         self.components = {}
-        for component in components:
-            self.components[str(type(component))] = component
+        for config_item in components_config:
+            self.components[config_item['name']] = config_item['component']
 
     def set_id(self, identity):
         self.id = identity
 
-    def add_component(self, component, token=None):
-        name = str(type(component))
+    def add_component(self, name, component, token=None):
         self.components[name] = component
         if token:
-            token.set(self.id, name, component)
+            token.set(self.id, name, component.get())
 
     def update_component(self, name, config, token=None):
         component = self.components[name]
@@ -90,10 +90,7 @@ class Component:
         return self.values[key]
 
     def get(self):
-        return self.values
-
-    def get_value(self, key):
-        return self.values[key]
+        return copy.deepcopy(self.values)
 
     def keys(self):
         return self.values.keys()
