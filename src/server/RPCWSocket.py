@@ -2,7 +2,7 @@ import json
 
 import tornado.websocket
 
-from lib.SequenceGenerator import Sequence
+from src.lib.SequenceGenerator import Sequence
 
 
 class RPCWSocket(tornado.websocket.WebSocketHandler):

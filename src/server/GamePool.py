@@ -1,9 +1,10 @@
-from core.ECS import ECS
-from core.GameBuilder import Builder
+from src.core.GameBuilder import Builder
 
-import core.Systems
-import core.Components
-import core.Entities
+from src.core.ECS import ECS
+
+import src.core.Systems
+import src.core.Entities
+import src.core.Components
 
 _config = {
     "entities": [
@@ -52,7 +53,7 @@ _config = {
 class GamePool:
     def __init__(self):
         self.pool = []
-        Builder.init(core.Systems, core.Entities, core.Components)
+        Builder.init(src.core.Systems, src.core.Entities, src.core.Components)
 
     def _push(self, game):
         self.pool.append(game)

@@ -1,17 +1,10 @@
+import json
+
 import tornado.ioloop as ioloop
 import tornado.web as web
 
-import RPCWSocket as Socket
-
-import json
-
-import core.Commands as Commands
-
-
-class TestHandler(web.RequestHandler):
-    def post(self, *args, **kwargs):
-        self.set_header('Access-Control-Allow-Origin', '*')
-        self.render('templates/index.html', result=self.get_argument('test'))
+from src.core import Commands
+from src.server import RPCWSocket as Socket
 
 
 class GameHandler(web.RequestHandler):

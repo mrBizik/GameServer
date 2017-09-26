@@ -1,4 +1,4 @@
-from core.ECS import System as _System
+from src.core.ECS import System as _System
 
 
 class CollisionSystem(_System):

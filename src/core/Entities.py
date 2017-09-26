@@ -1,4 +1,4 @@
-from core.ECS import Entity as _Entity
+from src.core.ECS import Entity as _Entity
 
 
 class Player(_Entity):

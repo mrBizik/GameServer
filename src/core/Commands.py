@@ -1,4 +1,4 @@
-from core.BaseStruct import Command
+from src.core.BaseStruct import Command
 
 
 class Move(Command):

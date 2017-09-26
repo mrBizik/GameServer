@@ -1,6 +1,7 @@
-from core.GameBuilder import Builder
-from core.BaseStruct import EntityList, SystemList, TokenList
 import copy
+
+from src.core.GameBuilder import Builder
+from src.core.BaseStruct import EntityList, SystemList, TokenList
 
 
 class ECS:
