@@ -1,10 +1,9 @@
-import tornado.web as web
+import src.Handlers as GameHandlers
 import tornado.ioloop as ioloop
+import tornado.web as web
 
-import Handlers as game_handlers
-from GamePool import GamePool
-
-from lib.SequenceGenerator import Sequence
+from src.GamePool import GamePool
+from src.lib.SequenceGenerator import Sequence
 
 
 class Application(web.Application):
@@ -20,12 +19,12 @@ class Application(web.Application):
         }
 
         handlers = (
-            (r"/", game_handlers.GameHandler),
-            (r"/socket/", game_handlers.GameSocket),
+            (r"/", GameHandlers.GameHandler),
+            (r"/socket/", GameHandlers.GameSocket),
             # (r"/game/(.*)", game_handlers.GameHandler),
-            # TODO: разобраться с кэшированием, возможно отдавать статику ч-з nginx
-            (r"/static/(.*)", web.StaticFileHandler, {"path": "static/"}),
-            (r"/test/(.*)", game_handlers.TestHandler),
+            # TODO: разобраться с кэшем, передавать параметром путь до статики(или отдельный конфиг)
+            (r"/static/(.*)", web.StaticFileHandler, {"path": "/var/www/static/"}),
+            (r"/test/(.*)", GameHandlers.TestHandler),
         )
 
         web.Application.__init__(self, handlers, **settings)

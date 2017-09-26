@@ -1,11 +1,9 @@
+import json
+
 import tornado.ioloop as ioloop
 import tornado.web as web
 
-import RPCWSocket as Socket
-
-import json
-
-import core.Commands as Commands
+from src import core as Commands, RPCWSocket as Socket
 
 
 class TestHandler(web.RequestHandler):

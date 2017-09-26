@@ -1,7 +1,6 @@
 import unittest
 
-import lib.DataIndex as DIndex
-import lib.GeometryObject as Gobj
+from src import lib as DIndex, lib as Gobj
 
 
 class DataIndexQuadtreeStartTestCase(unittest.TestCase):

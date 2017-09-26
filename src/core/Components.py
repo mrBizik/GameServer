@@ -1,4 +1,4 @@
-from core.ECS import Component as _Component
+from src.core.ECS import Component as _Component
 
 
 class Move(_Component):

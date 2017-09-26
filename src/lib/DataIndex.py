@@ -1,4 +1,4 @@
-import lib.GeometryObject as Gobj
+from src import lib as Gobj
 
 
 class Quadtree:
