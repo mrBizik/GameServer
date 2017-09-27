@@ -27,14 +27,16 @@ class RPCWSocket(tornado.websocket.WebSocketHandler):
     """
       Разобрать json полученный от клиента
     """
-    def _parse_message(self, message):
+    @staticmethod
+    def _parse_message(message):
         parsed = json.loads(message)
         return parsed["method"], parsed["params"], parsed["id"]
 
     """
       Распарсить параметры в соответствии с ключами в param_keys
     """
-    def _parse_params(self, param_keys, raw_params):
+    @staticmethod
+    def _parse_params(param_keys, raw_params):
         result = {}
         i = 0
         # TODO: проверка длинны raw_param, установка дефолтных значений

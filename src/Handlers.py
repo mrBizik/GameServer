@@ -7,6 +7,14 @@ from src.core import Commands
 from src.server import RPCWSocket as Socket
 
 
+class IndexHandler(web.RequestHandler):
+    def get(self, *args, **kwargs):
+        self.render('templates/index.html', title="ECS engine", canvas={
+            "id": "test-canvas",
+            "width": 700,
+            "height": 700
+        })
+
 class GameHandler(web.RequestHandler):
     def post(self, *args, **kwargs):
         self.set_header('Access-Control-Allow-Origin', '*')
@@ -23,7 +31,7 @@ class GameHandler(web.RequestHandler):
         if action == 'connect':
             result = json.dumps({'result': self._connect_to_game(params['idGame'])})
 
-        self.render('templates/index.html', result=result)
+        self.render('templates/answer.html', result=result)
 
     def _connect_to_game(self, id_game):
         game_config = None

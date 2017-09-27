@@ -16,10 +16,13 @@ class Application(web.Application):
             "login_url": "/login",
             # TODO: true
             "xsrf_cookies": False,
+            # TODO: не забыть вырубить
+            "debug": True
         }
 
         handlers = (
-            (r"/", GameHandlers.GameHandler),
+            (r"/", GameHandlers.IndexHandler),
+            (r"/start", GameHandlers.GameHandler),
             (r"/socket/", GameHandlers.GameSocket),
             # (r"/game/(.*)", game_handlers.GameHandler),
             # TODO: разобраться с кэшем, передавать параметром путь до статики(или отдельный конфиг)

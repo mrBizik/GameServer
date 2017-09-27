@@ -6,6 +6,8 @@ import src.core.Systems
 import src.core.Entities
 import src.core.Components
 
+# TODO: Сделать лимит на кол-во комнат, если потребуется создавать руками. Динамику убрать
+
 _config = {
     "entities": [
         {

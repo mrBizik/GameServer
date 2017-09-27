@@ -1,1 +1,4 @@
-{{ result }}
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% end %}
+{% block content %} <canvas id = "{{ canvas['id'] }}" width=" {{ canvas['width']}}" height=" {{ canvas['height'] }}"></canvas> {% end %}
