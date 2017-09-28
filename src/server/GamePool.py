@@ -18,8 +18,8 @@ _config = {
                 {
                     "type": "Geometry",
                     "config": {
-                        "width": 128,
-                        "height": 128,
+                        "width": 96,
+                        "height": 174,
                         "x": 128,
                         "y": 128,
                     }
@@ -27,12 +27,46 @@ _config = {
                 {
                     "type": "Render",
                     "config": {
-                        "width": 512,
-                        "height": 128,
+                        "width": 1024,
+                        "height": 220,
                         "x": 0,
                         "y": 0,
                         "speed": 20,
-                        "frameCount": 4,
+                        "frameCount": 10,
+                        "animationSpeed": 10
+                    }
+                },
+                {
+                    "type": "Move",
+                    "config": {
+                        "speed": 10
+                    }
+                }
+            ]
+        },
+{
+            "type": "Player",
+            # TODO: Idшники выставляются во время создания сущностей, надо чтобы на фронт попадало все верно
+            "id": 1,
+            "config": [
+                {
+                    "type": "Geometry",
+                    "config": {
+                        "width": 96,
+                        "height": 174,
+                        "x": 200,
+                        "y": 128,
+                    }
+                },
+                {
+                    "type": "Render",
+                    "config": {
+                        "width": 1024,
+                        "height": 220,
+                        "x": 0,
+                        "y": 220,
+                        "speed": 20,
+                        "frameCount": 10,
                         "animationSpeed": 10
                     }
                 },
@@ -46,7 +80,7 @@ _config = {
         }
     ],
     "resources": {
-        "atlas": "./img/smurfic.jpg",
+        "atlas": "/static/chicken.jpg",
         "sound": []
     }
 }

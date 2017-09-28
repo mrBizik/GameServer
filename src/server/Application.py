@@ -22,7 +22,7 @@ class Application(web.Application):
 
         handlers = (
             (r"/", GameHandlers.IndexHandler),
-            (r"/start", GameHandlers.GameHandler),
+            (r"/api", GameHandlers.GameHandler),
             (r"/socket/", GameHandlers.GameSocket),
             # (r"/game/(.*)", game_handlers.GameHandler),
             # TODO: разобраться с кэшем, передавать параметром путь до статики(или отдельный конфиг)

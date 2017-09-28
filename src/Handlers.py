@@ -1,5 +1,3 @@
-import json
-
 import tornado.ioloop as ioloop
 import tornado.web as web
 
@@ -15,9 +13,9 @@ class IndexHandler(web.RequestHandler):
             "height": 700
         })
 
+
 class GameHandler(web.RequestHandler):
     def post(self, *args, **kwargs):
-        self.set_header('Access-Control-Allow-Origin', '*')
         action = self.get_argument('action')
         params = None
         result = None
@@ -26,10 +24,10 @@ class GameHandler(web.RequestHandler):
             params = json.loads(self.get_argument('args'))
 
         if action == 'new':
-            result = json.dumps({'state': self._new_game()})
+            result = {'state': self._new_game()}
 
         if action == 'connect':
-            result = json.dumps({'result': self._connect_to_game(params['idGame'])})
+            result = {'result': self._connect_to_game(params['idGame'])}
 
         self.render('templates/answer.html', result=result)
 
