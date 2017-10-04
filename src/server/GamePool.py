@@ -1,3 +1,5 @@
+import tornado.ioloop as ioloop
+
 from src.core.GameBuilder import Builder
 
 from src.core.ECS import ECS
@@ -6,7 +8,6 @@ import src.core.Systems
 import src.core.Entities
 import src.core.Components
 
-# TODO: Сделать лимит на кол-во комнат, если потребуется создавать руками. Динамику убрать
 
 _config = {
     "entities": [
@@ -44,7 +45,7 @@ _config = {
                 }
             ]
         },
-{
+        {
             "type": "Player",
             # TODO: Idшники выставляются во время создания сущностей, надо чтобы на фронт попадало все верно
             "id": 1,
@@ -86,20 +87,30 @@ _config = {
 }
 
 
+#TODO: План доработки:
+# Здесь будет:
+# - вытаскивание конфигов игры из базы
+#
+
 class GamePool:
     def __init__(self):
+        self.game_limit = 2
         self.pool = []
         Builder.init(src.core.Systems, src.core.Entities, src.core.Components)
+        i = 0
+        while i < self.game_limit:
+            game = ECS(_config)
+            game.init_game()
+            game.set_id(self._push(game))
+            # запускаем румы
+            # TODO: лучше запускать руму при входе игроков(?)
+            # Вообще лучше отдавать в коллбэк метод из gamePool
+            ioloop.IOLoop.instance().add_callback(game.game_loop)
+            i += 1
 
     def _push(self, game):
         self.pool.append(game)
         return len(self.pool)
-
-    def new_game(self):
-        game = ECS(_config)
-        game.init_game()
-        game.set_id(self._push(game))
-        return game
 
     def connect_to_game(self, id_game=None):
         game_state = None
