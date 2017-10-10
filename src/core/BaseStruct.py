@@ -74,6 +74,7 @@ class TokenList:
         return len(self.tokens) == 0
 
 
+# TODO: нужны геттеры для параметров
 class Command:
     def __init__(self, params, context, tokenize=True):
         # При создании команды задаем параметры, с которыми она будет выполнятся

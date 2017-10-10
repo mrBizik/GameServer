@@ -1,16 +1,20 @@
 import copy
 
 from src.core.GameBuilder import Builder
+# TODO: EntityList SystemList нафиг не нужны
 from src.core.BaseStruct import EntityList, SystemList, TokenList
 
+# import tornado.ioloop as ioloop
 
 class ECS:
     def __init__(self, config):
         self.systems = SystemList()
         self.entities = EntityList()
+        # Нужен нормальный слушатель
         self.on_update_list = []
         self.id = None
         self.config = config
+        self.is_run = False
 
     def init_game(self):
         system_order = 0
@@ -28,9 +32,11 @@ class ECS:
         self.config["game_id"] = identity
 
     def game_loop(self):
+        self.is_run = True
         token_list = TokenList()
         self.systems.update_systems(self, 1)
         self.fire_update(token_list)
+        print('Game {} '.format(self.id))
 
     # TODO: Костыль для обновления слушателей, после выполнения команды
     def fire_update(self, token_list):
