@@ -117,17 +117,15 @@ class RpcWebSocket(WebSocketHandler):
         super(RpcWebSocket, self).__init__(application, request, **kwargs)
 
     def open(self, *args, **kwargs):
-        result, error = Rpc.make_message()
-        if error:
-            result = error
-        self.write_message(result)
+        self.send_message()
 
     def on_message(self, message):
         method, params, id = Rpc.parse_message(message)
         message, error = Rpc.call_method(self, method, params)
-        self.write_message(message, error)
+        # TODO: тут же дуплекс соединение, не надо так(пока нормально обрабатывать не научим)
+        # self.send_message(message, error)
 
-    def send_message(self, result, error=None):
+    def send_message(self, result=None, error=None):
         if not error:
             message, error = Rpc.make_message(result)
         else:

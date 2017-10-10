@@ -39,7 +39,7 @@ class GameSocket(RpcWebSocket):
     def on_game_update(self, token_list):
         # TODO: временный костыль пока нормальное завершение игры не сделаю
         if self.ws_connection is not None:
-            self.write_message(token_list.get())
+            self.send_message(token_list.get())
 
     def rpc_move(self, params):
         # TODO: Не факт что сущность равна id_user
