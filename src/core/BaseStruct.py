@@ -11,6 +11,10 @@ class EntityList:
         # TODO: try catch + проверка на отрицательные значения(?)
         return self.entities[identity]
 
+    def get_all(self):
+        for entity in self.entities:
+            yield entity
+
 
 class SystemList:
     def __init__(self):

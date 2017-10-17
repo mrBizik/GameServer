@@ -1,4 +1,5 @@
 import tornado.ioloop as ioloop
+from tornado import gen
 
 from src.core.GameBuilder import Builder
 
@@ -90,7 +91,7 @@ _config = {
 #TODO: План доработки:
 # Здесь будет:
 # - вытаскивание конфигов игры из базы
-#
+# - запуск рум при входе игроков (а правильнее по команде start_game)
 
 class GamePool:
     def __init__(self):
@@ -102,22 +103,30 @@ class GamePool:
             game = ECS(_config)
             game.init_game()
             game.set_id(self._push(game))
-            # запускаем румы
-            # TODO: лучше запускать руму при входе игроков(?)
-            # Вообще лучше отдавать в коллбэк метод из gamePool
-            ioloop.IOLoop.instance().add_callback(game.game_loop)
             i += 1
+
+    @gen.coroutine
+    def game_pool_loop(self):
+        i = 0
+        while True:
+            game = self.pool[i]
+            if game.is_run:
+                yield game.game_loop()
+            i += 1
+            if i == len(self.pool):
+                i = 0
 
     def _push(self, game):
         self.pool.append(game)
         return len(self.pool)
 
     def connect_to_game(self, id_game=None):
-        game_state = None
         if id_game:
             game_state = self.get_game(id_game)
         else:
             game_state = self.search_game()
+        game_state.is_run = True
+        ioloop.IOLoop.current().spawn_callback(self.game_pool_loop)
         return game_state
 
     def search_game(self):
@@ -126,8 +135,9 @@ class GamePool:
         return None
 
     def get_game(self, id_game):
-        game_state = None
-        try:
-            game_state = self.pool[id_game]
-        finally:
-            return game_state
+        return self.pool[0]
+        # game_state = None
+        # try:
+        #     game_state = self.pool[id_game]
+        # finally:
+        #     return game_state

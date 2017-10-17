@@ -1,7 +1,9 @@
+import logging
 import tornado.web as web
 
 from src.core import Commands
 from src.server.JSONRpc import RpcWebSocket, RpcHandler
+from src.lib.Observable import Observer
 
 
 class IndexHandler(web.RequestHandler):
@@ -27,18 +29,18 @@ class GameHandler(RpcHandler):
             self.set_cookie('user_id', '1')
 
 
-class GameSocket(RpcWebSocket):
+class GameSocket(RpcWebSocket, Observer):
     def __init__(self, application, request, **kwargs):
         super(GameSocket, self).__init__(application, request, **kwargs)
         # self.user_id = self.get_cookie('user_id')
         # TODO: hardcode
         self.user_id = 1
         self.game = self.application.game_pool.get_game(0)
-        self.game.add_game_listener(self.on_game_update)
+        self.game.register(self)
 
-    def on_game_update(self, token_list):
+    def update(self, message, token_list):
         # TODO: временный костыль пока нормальное завершение игры не сделаю
-        if self.ws_connection is not None:
+        if message == 'update' and self.ws_connection is not None:
             self.send_message(token_list.get())
 
     def rpc_move(self, params):
