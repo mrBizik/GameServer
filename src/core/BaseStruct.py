@@ -1,3 +1,6 @@
+import logging
+
+
 class EntityList:
     def __init__(self):
         self.entities = []
@@ -93,5 +96,5 @@ class Command:
             self.tokens = TokenList()
 
     def __call__(self, extra_args=None):
-        # Метод переопределяется в предках и выполняет соотв. команде действия
-        raise Exception('Не переопределен метод __call__ для команды!')
+        log = logging.getLogger('core.Command')
+        log.debug('call command {}({}) extra_args: {}'.format(self.__class__, self.params, extra_args))

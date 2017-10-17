@@ -1,4 +1,5 @@
 import json
+import logging
 
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler
@@ -95,7 +96,7 @@ class Rpc:
         return json.dumps(message)
 
     @staticmethod
-    def call_method(context, method, params,):
+    def call_method(context, method, params):
         error = None
         message = None
         method = Rpc.rpc_method_prefix() + method
@@ -108,6 +109,11 @@ class Rpc:
             # TODO add to log message
             error = Rpc.make_error(METHOD_NOT_FOUND)
         finally:
+            log_level = logging.getLogger('tornado.Handlers')
+            if error:
+                log_level.debug('class {}\nmethod {}({}) \nerror {}'.format(context.__class__, method, params, error))
+            else:
+                log_level.debug('class {}\nmethod {}({}) \nresult {}'.format(context.__class__, method, params, result))
             return message, error
 
 
