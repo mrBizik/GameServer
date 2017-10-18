@@ -113,7 +113,7 @@ class Rpc:
             if error:
                 log_level.debug('class {}\nmethod {}({}) \nerror {}'.format(context.__class__, method, params, error))
             else:
-                log_level.debug('class {}\nmethod {}({}) \nresult {}'.format(context.__class__, method, params, result))
+                log_level.debug('class {}\nmethod {}({}) \nresult {}'.format(context.__class__, method, params, message))
             return message, error
 
 

@@ -41,6 +41,7 @@ class GameSocket(RpcWebSocket, Observer):
     def update(self, message, token_list):
         # TODO: временный костыль пока нормальное завершение игры не сделаю
         if message == 'update' and self.ws_connection is not None:
+            logging.debug('update {}'.format(token_list.get()))
             self.send_message(token_list.get())
 
     def rpc_move(self, params):
@@ -49,3 +50,6 @@ class GameSocket(RpcWebSocket, Observer):
         params['id'] = 0
         command = Commands.Move(params, self.game)
         command()
+
+    def on_close(self):
+        self.close_observer()

@@ -10,13 +10,11 @@ class EntityList:
         id = len(self.entities) - 1
         entity.set_id(id)
 
-    def get(self, identity):
-        # TODO: try catch + проверка на отрицательные значения(?)
-        return self.entities[identity]
-
-    def get_all(self):
-        for entity in self.entities:
-            yield entity
+    def get(self, identity = None):
+        if identity is not None:
+            return self.entities[identity]
+        else:
+            return self.entities
 
 
 class SystemList:
