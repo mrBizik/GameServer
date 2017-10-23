@@ -4,85 +4,64 @@ from src.lib.Observable import Observer, Observable
 
 
 class ObserverTestCase(unittest.TestCase):
+    def mock_update(self, message, *args):
+        return message == 'test'
+
+    def setUp(self):
+        self.observer = Observer()
+        self.observer.update = self.mock_update
+
     def test_create(self):
-        observer = Observer()
-        self.assertTrue(observer.is_ready)
+        self.assertTrue(self.observer.is_ready)
 
     def test_update(self):
-        observer = Observer()
 
-        def mock_update(message, *args):
-            return message == 'test'
-
-        observer.update = mock_update
-        self.assertTrue(observer.update('test'))
+        self.assertTrue(self.observer.update('test'))
 
     def test_close_observer(self):
-        observer = Observer()
-        observer.close_observer()
-        self.assertFalse(observer.is_ready)
+        self.observer.close_observer()
+        self.assertFalse(self.observer.is_ready)
 
 
 class ObservableTestCase(unittest.TestCase):
+    def mock_update_1(self, message, *args):
+        self.update_calls.append('{} 1'.format(message))
+
+    def mock_update_2(self, message, *args):
+        self.update_calls.append('{} 2'.format(message))
+
+    def setUp(self):
+        self.update_calls = []
+        self.observable = Observable()
+        self.observer1 = Observer()
+        self.observer2 = Observer()
+        self.observer1.update = self.mock_update_1
+        self.observer2.update = self.mock_update_2
+
     def test_register(self):
-        observable = Observable()
-        observer = Observer()
-        observable.register(observer)
-        self.assertEqual(len(observable.observers), 1)
-        self.assertEqual(observable.observers, [observer])
+        self.observable.register(self.observer1)
+        self.assertEqual(len(self.observable.observers), 1)
+        self.assertEqual(self.observable.observers, [self.observer1])
 
     def test_notify_one(self):
-        observable = Observable()
-        observer = Observer()
-        update_calls = []
         notify_msg = ['1', '2', '3', '4']
-
-        def mock_update(message, *args):
-            update_calls.append(message)
-
-        observer.update = mock_update
-        observable.register(observer)
+        check_notufy_msg = ['1 1', '2 1', '3 1', '4 1']
+        self.observable.register(self.observer1)
 
         for msg in notify_msg:
-            observable.notify(msg)
-        self.assertEqual(update_calls, notify_msg)
+            self.observable.notify(msg)
+        self.assertEqual(self.update_calls, check_notufy_msg)
 
     def test_notify_many(self):
-        observable = Observable()
-        observer1 = Observer()
-        observer2 = Observer()
-        update_calls = []
+        self.observable.register(self.observer1)
+        self.observable.register(self.observer2)
 
-        def mock_update_1(message, *args):
-            update_calls.append('{} 1'.format(message))
-
-        def mock_update_2(message, *args):
-            update_calls.append('{} 2'.format(message))
-
-        observer1.update = mock_update_1
-        observable.register(observer1)
-        observer2.update = mock_update_2
-        observable.register(observer2)
-
-        observable.notify('ok')
-        self.assertEqual(update_calls, ['ok 1', 'ok 2'])
+        self.observable.notify('ok')
+        self.assertEqual(self.update_calls, ['ok 1', 'ok 2'])
 
     def test_notify_when_closed(self):
-        observable = Observable()
-        observer1 = Observer()
-        observer2 = Observer()
-        update_calls = []
-
-        def mock_update_1(message, *args):
-            update_calls.append('{} 1'.format(message))
-
-        def mock_update_2(message, *args):
-            update_calls.append('{} 2'.format(message))
-
-        observer1.update = mock_update_1
-        observable.register(observer1)
-        observer2.update = mock_update_2
-        observable.register(observer2)
-        observer2.is_ready = False
-        observable.notify('ok')
-        self.assertEqual(update_calls, ['ok 1'])
+        self.observable.register(self.observer1)
+        self.observable.register(self.observer2)
+        self.observer2.is_ready = False
+        self.observable.notify('ok')
+        self.assertEqual(self.update_calls, ['ok 1'])
