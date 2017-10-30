@@ -8,35 +8,34 @@ from src.lib.Observable import Observable
 
 
 class ECS(Observable):
-    def __init__(self, config):
+    def __init__(self):
         self.systems = SystemList()
         self.entities = EntityList()
-        self.id = None
-        self.config = config
         self.is_run = False
         super(ECS, self).__init__()
 
-    def init_game(self):
+    def init_game(self, config):
         system_order = 0
         for system in Builder.build_systems():
             self.systems.push(system, system_order)
             system_order += 1
-        for entity in Builder.build_entities(self.config["entities"]):
+        for entity in Builder.build_entities(config["entities"]):
             self.entities.push(entity)
 
-    def get_config(self, type):
-        return self.config
+    def start_game(self):
+        self.is_run = True
+        self.notify('start')
 
-    def set_id(self, identity):
-        self.id = identity
-        self.config["game_id"] = identity
+    def stop_game(self):
+        self.is_run = False
+        self.notify('stop')
 
     def game_loop(self):
-        self.is_run = True
-        token_list = TokenList()
-        self.systems.update_systems(self, 1)
-        if not token_list.is_empty():
-            self.notify('update', token_list)
+        if self.is_run:
+            token_list = TokenList()
+            self.systems.update_systems(self, 1)
+            if not token_list.is_empty():
+                self.notify('update', token_list)
 
 
 class Entity:

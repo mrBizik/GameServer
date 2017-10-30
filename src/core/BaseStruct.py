@@ -95,4 +95,8 @@ class Command:
 
     def __call__(self, extra_args=None):
         log = logging.getLogger('core.Command')
+        self.context.notify('update', self.tokens)
         log.debug('call command {}({}) extra_args: {}'.format(self.__class__, self.params, extra_args))
+
+    def notify_game(self, message, *args):
+        self.context.notify(message, *args)

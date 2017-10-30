@@ -45,12 +45,12 @@ class ObservableTestCase(unittest.TestCase):
 
     def test_notify_one(self):
         notify_msg = ['1', '2', '3', '4']
-        check_notufy_msg = ['1 1', '2 1', '3 1', '4 1']
+        check_notify_msg = ['1 1', '2 1', '3 1', '4 1']
         self.observable.register(self.observer1)
 
         for msg in notify_msg:
             self.observable.notify(msg)
-        self.assertEqual(self.update_calls, check_notufy_msg)
+        self.assertEqual(self.update_calls, check_notify_msg)
 
     def test_notify_many(self):
         self.observable.register(self.observer1)
