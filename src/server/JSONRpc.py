@@ -16,6 +16,11 @@ METHOD_NOT_FOUND = {
     "message": "Method not found"
 }
 
+UNKNOWN_ERR = {
+    "code": -2,
+    "message": "Unknown Error"
+}
+
 
 # TODO: make batch
 # TODO: make async answer
@@ -108,6 +113,8 @@ class Rpc:
         except ValueError:
             # TODO add to log message
             error = Rpc.make_error(METHOD_NOT_FOUND)
+        except Exception:
+            error = Rpc.make_error(UNKNOWN_ERR)
         finally:
             log_level = logging.getLogger('tornado.Handlers')
             if error:
