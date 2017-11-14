@@ -49,6 +49,9 @@ class Entity:
     def set_id(self, identity):
         self.id = identity
 
+    def get_id(self):
+        return self.id
+
     def add_component(self, name, component, token=None):
         self.components[name] = component
         if token:

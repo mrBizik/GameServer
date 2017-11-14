@@ -30,7 +30,7 @@ _config = {
                         "height": 220,
                         "x": 0,
                         "y": 0,
-                        "speed": 20,
+                        "speed": 10,
                         "frameCount": 10,
                         "animationSpeed": 10
                     }
@@ -53,7 +53,7 @@ _config = {
                     "config": {
                         "width": 96,
                         "height": 174,
-                        "x": 200,
+                        "x": 450,
                         "y": 128,
                     }
                 },
@@ -89,6 +89,7 @@ class GameRoom:
     def __init__(self, game_config):
         self.id = str(uuid.uuid1())
         self.game = ECS()
+        # TODO: Если конфиг будет тянуться из базы, то deepcopy не надо
         self.config = copy.deepcopy(game_config)
         self.config["game_id"] = self.get_id()
         self.game.init_game(game_config)
