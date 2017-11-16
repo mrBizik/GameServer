@@ -1,13 +1,11 @@
 import tornado.ioloop as ioloop
-
-from src.core.GameBuilder import Builder
+from tornado import gen
 
 from src.core.ECS import ECS
 
-import src.core.Systems
-import src.core.Entities
-import src.core.Components
-
+import uuid
+import copy
+import logging
 
 _config = {
     "entities": [
@@ -32,7 +30,7 @@ _config = {
                         "height": 220,
                         "x": 0,
                         "y": 0,
-                        "speed": 20,
+                        "speed": 10,
                         "frameCount": 10,
                         "animationSpeed": 10
                     }
@@ -55,7 +53,7 @@ _config = {
                     "config": {
                         "width": 96,
                         "height": 174,
-                        "x": 200,
+                        "x": 450,
                         "y": 128,
                     }
                 },
@@ -87,47 +85,91 @@ _config = {
 }
 
 
-#TODO: План доработки:
-# Здесь будет:
-# - вытаскивание конфигов игры из базы
-#
+class GameRoom:
+    def __init__(self, game_config):
+        self.id = str(uuid.uuid1())
+        self.game = ECS()
+        # TODO: Если конфиг будет тянуться из базы, то deepcopy не надо
+        self.config = copy.deepcopy(game_config)
+        self.config["game_id"] = self.get_id()
+        self.game.init_game(game_config)
+        self.players = []
+
+    def get_config(self):
+        return self.config
+
+    def get_state(self):
+        return self.game
+
+    def get_id(self):
+        return self.id
+
+    def add_player(self, player):
+        if not self.game.is_run:
+            self.start_game()
+        logging.debug('add_player {}'.format(player))
+        if not self.check_player(player):
+            self.players.append(player)
+
+    def delete_player(self, player):
+        new_list = []
+        logging.debug('add_player {}'.format(player))
+        # TODO: убрать костыль
+        for item in self.players:
+            if player != item:
+                new_list.append(player)
+        self.players = new_list
+
+    def start_game(self):
+        self.game.start_game()
+        # 1 ядро грузится на 100%
+        # ioloop.IOLoop.current().spawn_callback(self._game_loop)
+
+    @gen.coroutine
+    def _game_loop(self):
+        while self.game.is_run and len(self.players) > 0:
+            yield self.game.game_loop()
+        self.stop_game()
+
+    def stop_game(self):
+        self.game.stop_game()
+
+    def check_player(self, player):
+        result = False
+        for p in self.players:
+            if p == player:
+                result = True
+        return result
+
 
 class GamePool:
     def __init__(self):
         self.game_limit = 2
         self.pool = []
-        Builder.init(src.core.Systems, src.core.Entities, src.core.Components)
         i = 0
         while i < self.game_limit:
-            game = ECS(_config)
-            game.init_game()
-            game.set_id(self._push(game))
-            # запускаем румы
-            # TODO: лучше запускать руму при входе игроков(?)
-            # Вообще лучше отдавать в коллбэк метод из gamePool
-            ioloop.IOLoop.instance().add_callback(game.game_loop)
+            self.pool.append(GameRoom(_config))
             i += 1
 
-    def _push(self, game):
-        self.pool.append(game)
-        return len(self.pool)
-
-    def connect_to_game(self, id_game=None):
-        game_state = None
+    def connect_to_room(self, player, id_game=None):
         if id_game:
-            game_state = self.get_game(id_game)
+            room = self.get_room(id_game, player)
         else:
-            game_state = self.search_game()
-        return game_state
+            room = self.search_room()
 
-    def search_game(self):
-        for game in self.pool:
-            return game
-        return None
+        if room is not None:
+             room.add_player(player)
 
-    def get_game(self, id_game):
-        game_state = None
-        try:
-            game_state = self.pool[id_game]
-        finally:
-            return game_state
+        return room
+
+    def search_room(self):
+        return self.pool[0]
+
+    def get_room(self, id_game, player):
+        for room in self.pool:
+            if room.get_id() == id_game and room.check_player(player):
+                return room
+
+    def get_game_config(self):
+        # TODO: Хранить в базе
+        return _config

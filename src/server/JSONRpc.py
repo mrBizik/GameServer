@@ -1,4 +1,5 @@
 import json
+import logging
 
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler
@@ -13,6 +14,11 @@ JSON_PARSE_ERR = {
 METHOD_NOT_FOUND = {
     "code": -32601,
     "message": "Method not found"
+}
+
+UNKNOWN_ERR = {
+    "code": -2,
+    "message": "Unknown Error"
 }
 
 
@@ -95,7 +101,7 @@ class Rpc:
         return json.dumps(message)
 
     @staticmethod
-    def call_method(context, method, params,):
+    def call_method(context, method, params):
         error = None
         message = None
         method = Rpc.rpc_method_prefix() + method
@@ -107,7 +113,14 @@ class Rpc:
         except ValueError:
             # TODO add to log message
             error = Rpc.make_error(METHOD_NOT_FOUND)
+        except Exception:
+            error = Rpc.make_error(UNKNOWN_ERR)
         finally:
+            log_level = logging.getLogger('tornado.Handlers')
+            if error:
+                log_level.debug('class {}\nmethod {}({}) \nerror {}'.format(context.__class__, method, params, error))
+            else:
+                log_level.debug('class {}\nmethod {}({}) \nresult {}'.format(context.__class__, method, params, message))
             return message, error
 
 
@@ -117,17 +130,15 @@ class RpcWebSocket(WebSocketHandler):
         super(RpcWebSocket, self).__init__(application, request, **kwargs)
 
     def open(self, *args, **kwargs):
-        result, error = Rpc.make_message()
-        if error:
-            result = error
-        self.write_message(result)
+        self.send_message()
 
     def on_message(self, message):
         method, params, id = Rpc.parse_message(message)
         message, error = Rpc.call_method(self, method, params)
-        self.write_message(message, error)
+        # TODO: тут же дуплекс соединение, не надо так(пока нормально обрабатывать не научим)
+        # self.send_message(message, error)
 
-    def send_message(self, result, error=None):
+    def send_message(self, result=None, error=None):
         if not error:
             message, error = Rpc.make_message(result)
         else:

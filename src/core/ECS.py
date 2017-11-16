@@ -1,45 +1,41 @@
 import copy
 
 from src.core.GameBuilder import Builder
+# TODO: EntityList SystemList нафиг не нужны
 from src.core.BaseStruct import EntityList, SystemList, TokenList
 
+from src.lib.Observable import Observable
 
-class ECS:
-    def __init__(self, config):
+
+class ECS(Observable):
+    def __init__(self):
         self.systems = SystemList()
         self.entities = EntityList()
-        self.on_update_list = []
-        self.id = None
-        self.config = config
+        self.is_run = False
+        super(ECS, self).__init__()
 
-    def init_game(self):
+    def init_game(self, config):
         system_order = 0
         for system in Builder.build_systems():
             self.systems.push(system, system_order)
             system_order += 1
-        for entity in Builder.build_entities(self.config["entities"]):
+        for entity in Builder.build_entities(config["entities"]):
             self.entities.push(entity)
 
-    def get_config(self, type):
-        return self.config
+    def start_game(self):
+        self.is_run = True
+        self.notify('start')
 
-    def set_id(self, identity):
-        self.id = identity
-        self.config["game_id"] = identity
+    def stop_game(self):
+        self.is_run = False
+        self.notify('stop')
 
     def game_loop(self):
-        token_list = TokenList()
-        self.systems.update_systems(self, 1)
-        self.fire_update(token_list)
-
-    # TODO: Костыль для обновления слушателей, после выполнения команды
-    def fire_update(self, token_list):
-        if not token_list.is_empty():
-            for callback in self.on_update_list:
-                callback(token_list)
-
-    def add_game_listener(self, callback):
-        self.on_update_list.append(callback)
+        if self.is_run:
+            token_list = TokenList()
+            self.systems.update_systems(self, 1)
+            if not token_list.is_empty():
+                self.notify('update', token_list)
 
 
 class Entity:
@@ -52,6 +48,9 @@ class Entity:
 
     def set_id(self, identity):
         self.id = identity
+
+    def get_id(self):
+        return self.id
 
     def add_component(self, name, component, token=None):
         self.components[name] = component

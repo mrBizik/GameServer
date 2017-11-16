@@ -1,7 +1,11 @@
+import uuid
+import logging
+
 import tornado.web as web
 
 from src.core import Commands
 from src.server.JSONRpc import RpcWebSocket, RpcHandler
+from src.lib.Observable import Observer
 
 
 class IndexHandler(web.RequestHandler):
@@ -15,35 +19,42 @@ class IndexHandler(web.RequestHandler):
 
 class GameHandler(RpcHandler):
     def rpc_connect_to_game(self, params):
-        game_config = None
-        id_game = params['idGame']
-        game = self.application.game_pool.connect_to_game(id_game)
-        if game:
-            game_config = game.get_config('frontend')
-        return game_config
+        self.register_user()
+        return self.application.game_pool.get_game_config()
 
     def register_user(self):
-        if not self.get_cookie('user_id'):
-            self.set_cookie('user_id', '1')
+        user_id = self.get_cookie('user_id')
+        if not user_id:
+            user_id = str(uuid.uuid1())
+            self.set_cookie('user_id', user_id)
+        logging.debug('register user {}'.format(user_id))
+        return user_id
 
 
-class GameSocket(RpcWebSocket):
+# TODO: Возможно стоит отказаться от наблюдателя, и перенести все в GamePool
+class GameSocket(RpcWebSocket, Observer):
     def __init__(self, application, request, **kwargs):
         super(GameSocket, self).__init__(application, request, **kwargs)
-        # self.user_id = self.get_cookie('user_id')
-        # TODO: hardcode
-        self.user_id = 1
-        self.game = self.application.game_pool.get_game(0)
-        self.game.add_game_listener(self.on_game_update)
+        logging.debug('init socket {}'.format(self.get_cookie('user_id')))
+        self.user_id = self.get_cookie('user_id')
+        self.room = self.application.game_pool.connect_to_room(self.user_id)
+        self.room.get_state().register(self)
 
-    def on_game_update(self, token_list):
-        # TODO: временный костыль пока нормальное завершение игры не сделаю
-        if self.ws_connection is not None:
-            self.write_message(token_list.get())
+    def update(self, message, token_list):
+        args = None
+        if token_list:
+            args = token_list.get()
+
+        logging.debug('{} {}'.format(message, args))
+        if message == 'update' and self.ws_connection is not None:
+            self.send_message(token_list.get())
+        super(GameSocket, self).update(message, token_list)
 
     def rpc_move(self, params):
-        # TODO: Не факт что сущность равна id_user
-        # params['id'] = self.user_id
         params['id'] = 0
-        command = Commands.Move(params, self.game)
+        command = Commands.Move(params, self.room.get_state())
         command()
+
+    def on_close(self):
+        self.room.delete_player(self.user_id)
+        self.close_observer()

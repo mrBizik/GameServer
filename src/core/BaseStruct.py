@@ -1,3 +1,6 @@
+import logging
+
+
 class EntityList:
     def __init__(self):
         self.entities = []
@@ -7,9 +10,11 @@ class EntityList:
         id = len(self.entities) - 1
         entity.set_id(id)
 
-    def get(self, identity):
-        # TODO: try catch + проверка на отрицательные значения(?)
-        return self.entities[identity]
+    def get(self, identity = None):
+        if identity is not None:
+            return self.entities[identity]
+        else:
+            return self.entities
 
 
 class SystemList:
@@ -74,6 +79,7 @@ class TokenList:
         return len(self.tokens) == 0
 
 
+# TODO: нужны геттеры для параметров
 class Command:
     def __init__(self, params, context, tokenize=True):
         # При создании команды задаем параметры, с которыми она будет выполнятся
@@ -88,5 +94,9 @@ class Command:
             self.tokens = TokenList()
 
     def __call__(self, extra_args=None):
-        # Метод переопределяется в предках и выполняет соотв. команде действия
-        raise Exception('Не переопределен метод __call__ для команды!')
+        log = logging.getLogger('core.Command')
+        self.context.notify('update', self.tokens)
+        log.debug('call command {}({}) extra_args: {}'.format(self.__class__, self.params, extra_args))
+
+    def notify_game(self, message, *args):
+        self.context.notify(message, *args)
